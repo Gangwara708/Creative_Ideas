@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Super Over Cricket 3D</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ===== HUD ===== -->
+  <div id="hud">
+    <div class="scoreboard">
+      <div class="team" id="sb-team">YOUR INNINGS</div>
+      <div class="score" id="sb-score">0/0</div>
+      <div class="meta" id="sb-meta">Overs 0.0 / 2</div>
+      <div class="target" id="sb-target"></div>
+    </div>
+    <div class="over-balls" id="over-balls"></div>
+
+    <div id="callout"></div>
+
+    <div id="aim-meter" style="display:none">
+      <div id="aim-fill"></div>
+    </div>
+    <div id="controls-hint">Press <b>Start Match</b> to play</div>
+    <button class="btn" id="bowl-btn">Bowl</button>
+  </div>
+
+  <!-- ===== Start overlay ===== -->
+  <div class="overlay" id="overlay">
+    <h1>Super Over Cricket 3D</h1>
+    <p>An original, fully free 3D cricket game. Bat a quick innings, then defend your total while the rivals chase. Every feature unlocked — no paywalls, ever.</p>
+    <div class="modes">
+      <div class="mode-card" data-overs="1" data-wickets="3">
+        <h3>Super Over</h3>
+        <span>1 over · 3 wickets · lightning quick</span>
+      </div>
+      <div class="mode-card" data-overs="2" data-wickets="5">
+        <h3>Power Blast</h3>
+        <span>2 overs · 5 wickets · the classic</span>
+      </div>
+      <div class="mode-card" data-overs="5" data-wickets="10">
+        <h3>Slog Fest</h3>
+        <span>5 overs · 10 wickets · full contest</span>
+      </div>
+    </div>
+    <button class="btn" id="start-btn">Start Match</button>
+    <p style="margin-top:18px;font-size:14px;color:#8a93a8">
+      Controls — <b>SPACE</b>/Click: bowl, then time your shot &nbsp;·&nbsp; <b>← →</b>: aim &nbsp;·&nbsp; <b>↑</b>: loft &nbsp;·&nbsp; <b>↓</b>: keep it down
+    </p>
+  </div>
+
+  <div class="credit">Super Over Cricket 3D — original work · open &amp; free</div>
+
+  <!-- Three.js (global build) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
