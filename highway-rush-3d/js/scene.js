@@ -1,8 +1,7 @@
 /* ============================================================
- * Scene builder — dusk highway with textured asphalt, lit
- * buildings, street lamps, sky dome, and properly shaped cars
- * (extruded body profile, glass canopy, alloy wheels, lights).
- * Everything is generated procedurally (no external assets).
+ * Scene builder — sky, lighting, ground, and the vehicles /
+ * pickups / obstacles. The curving road itself is built by
+ * Track (js/track.js). Everything is generated procedurally.
  * ============================================================ */
 window.RushScene = (function () {
   const C = window.CFG;
@@ -15,11 +14,13 @@ window.RushScene = (function () {
   // shared resources (created once on build)
   let ENV = null;
   let GLOW_WARM = null, GLOW_RED = null;
+  let HAZARD = null;
 
   function build() {
     ENV = T.envMap();
     GLOW_WARM = T.glow('rgba(255,240,200,1)', 'rgba(255,220,150,0.4)');
     GLOW_RED = T.glow('rgba(255,90,80,1)', 'rgba(255,60,50,0.4)');
+    HAZARD = T.hazard();
 
     const scene = new THREE.Scene();
     scene.environment = ENV;
@@ -59,137 +60,29 @@ window.RushScene = (function () {
     sun.shadow.bias = -0.0008;
     scene.add(sun);
 
-    const w = roadWidth();
-
-    // ---- Road surface (textured, scrolling) ----
-    const roadTex = T.asphalt();
-    roadTex.repeat.set(2, 40); // one repeat = 10 world metres along z
-    const road = new THREE.Mesh(
-      new THREE.PlaneGeometry(w + C.SHOULDER * 2, C.ROAD_LENGTH),
-      new THREE.MeshStandardMaterial({ map: roadTex, roughness: 0.92, metalness: 0.05 })
-    );
-    road.rotation.x = -Math.PI / 2;
-    road.position.z = -C.ROAD_LENGTH / 2 + 40;
-    road.receiveShadow = true;
-    scene.add(road);
-
-    // ---- Ground either side (textured, scrolling) ----
+    // ---- Ground plane under everything (textured, scrolling) ----
     const grassTex = T.grass();
-    grassTex.repeat.set(14, 40);
-    const groundMat = new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1 });
-    [-1, 1].forEach((side) => {
-      const g = new THREE.Mesh(new THREE.PlaneGeometry(120, C.ROAD_LENGTH), groundMat);
-      g.rotation.x = -Math.PI / 2;
-      g.position.set(side * (w / 2 + C.SHOULDER + 60), -0.02, road.position.z);
-      g.receiveShadow = true;
-      scene.add(g);
-    });
+    grassTex.repeat.set(40, 40);
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(360, C.ROAD_LENGTH),
+      new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(0, -0.04, -C.ROAD_LENGTH / 2 + 40);
+    ground.receiveShadow = true;
+    scene.add(ground);
 
     // textures that must scroll with the world (tex + metres per repeat)
     const scrollTextures = [
-      { tex: roadTex, unit: C.ROAD_LENGTH / 40 },
       { tex: grassTex, unit: C.ROAD_LENGTH / 40 },
     ];
-
-    // ---- Lane markings (scrolling group) ----
-    const markings = new THREE.Group();
-    const dashMat = new THREE.MeshBasicMaterial({ color: 0xc9cdd4 });
-    const dashLen = 3, gap = 5, count = Math.ceil(C.ROAD_LENGTH / (dashLen + gap));
-    for (let lane = 1; lane < C.LANES; lane++) {
-      const x = -w / 2 + lane * C.LANE_WIDTH;
-      for (let i = 0; i < count; i++) {
-        const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.18, dashLen), dashMat);
-        dash.rotation.x = -Math.PI / 2;
-        dash.position.set(x, 0.012, 40 - i * (dashLen + gap));
-        markings.add(dash);
-      }
-    }
-    const edgeMat = new THREE.MeshBasicMaterial({ color: 0xd9a83f });
-    [-1, 1].forEach((side) => {
-      const edge = new THREE.Mesh(new THREE.PlaneGeometry(0.22, C.ROAD_LENGTH), edgeMat);
-      edge.rotation.x = -Math.PI / 2;
-      edge.position.set(side * w / 2, 0.012, road.position.z);
-      scene.add(edge);
-    });
-    scene.add(markings);
-
-    // ---- Scenery: lamps, light pools, guard rails, buildings ----
-    const scenery = new THREE.Group();
-    const poleMat = new THREE.MeshStandardMaterial({ color: 0x52575e, metalness: 0.6, roughness: 0.5 });
-    const lampMat = new THREE.MeshBasicMaterial({ color: 0xffe9b8 });
-    const poolTex = T.lightPool();
-    const facades = [0, 1, 2].map((i) => {
-      const tex = T.facade(i);
-      return new THREE.MeshStandardMaterial({
-        map: tex,
-        emissiveMap: tex,
-        emissive: 0xffffff,
-        emissiveIntensity: 0.55,
-        roughness: 1,
-      });
-    });
-
-    for (let i = 0; i < 14; i++) {
-      const z = 40 - i * 30;
-      [-1, 1].forEach((side) => {
-        // street lamp: pole + curved arm + head + glow + pool of light
-        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 7.4, 8), poleMat);
-        pole.position.set(side * (w / 2 + 1.6), 3.7, z);
-        scenery.add(pole);
-        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.8, 6), poleMat);
-        arm.rotation.z = Math.PI / 2;
-        arm.position.set(side * (w / 2 + 0.75), 7.3, z);
-        scenery.add(arm);
-        const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.18, 0.32), lampMat);
-        head.position.set(side * (w / 2 + 0.1), 7.22, z);
-        scenery.add(head);
-        const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-          map: GLOW_WARM, color: 0xffe2a8, transparent: true,
-          blending: THREE.AdditiveBlending, depthWrite: false,
-        }));
-        glow.scale.setScalar(3.4);
-        glow.position.set(side * (w / 2 + 0.1), 7.2, z);
-        scenery.add(glow);
-        const pool = new THREE.Mesh(
-          new THREE.PlaneGeometry(9, 9),
-          new THREE.MeshBasicMaterial({
-            map: poolTex, transparent: true,
-            blending: THREE.AdditiveBlending, depthWrite: false,
-          })
-        );
-        pool.rotation.x = -Math.PI / 2;
-        pool.position.set(side * (w / 2 - 1.2), 0.015, z);
-        scenery.add(pool);
-
-        // guard rail segment
-        const rail = new THREE.Mesh(
-          new THREE.BoxGeometry(0.08, 0.35, 26),
-          new THREE.MeshStandardMaterial({ color: 0x9aa1a8, metalness: 0.8, roughness: 0.35 })
-        );
-        rail.position.set(side * (w / 2 + C.SHOULDER), 0.55, z - 13);
-        scenery.add(rail);
-
-        // buildings
-        if (i % 2 === 0) {
-          const h = 10 + Math.random() * 22;
-          const bw = 9 + Math.random() * 7;
-          const bldg = new THREE.Mesh(
-            new THREE.BoxGeometry(bw, h, 13),
-            facades[i % facades.length]
-          );
-          bldg.position.set(side * (w / 2 + 18 + Math.random() * 12), h / 2, z - 8);
-          scenery.add(bldg);
-        }
-      });
-    }
-    scene.add(scenery);
 
     // ---- Player car ----
     const player = makeCar(0xff5e2c, true);
     player.position.set(0, 0, 0);
     scene.add(player);
 
-    return { scene, road, markings, scenery, player, sun, scrollTextures };
+    return { scene, player, sun, scrollTextures };
   }
 
   /** Realistic-silhouette car: extruded side profile + glass canopy. Nose toward -z. */
@@ -316,7 +209,91 @@ window.RushScene = (function () {
         tip.position.set(x, 0.38, 2.32);
         g.add(tip);
       });
+
+      // reversing lights (lit only in reverse gear)
+      const revMat = new THREE.MeshBasicMaterial({ color: 0x222222 });
+      const revLights = [];
+      [-0.32, 0.32].forEach((x) => {
+        const rl = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.1, 0.05), revMat.clone());
+        rl.position.set(x, 0.62, 2.34);
+        g.add(rl);
+        revLights.push(rl);
+      });
+      g.userData.revLights = revLights;
     }
+    return g;
+  }
+
+  /** Jump ramp: hazard-striped wedge rising away from the player. */
+  function makeRamp() {
+    const g = new THREE.Group();
+    const L = C.RAMP_LENGTH, H = C.RAMP_HEIGHT, W = 3.0;
+    const profile = new THREE.Shape();
+    profile.moveTo(0, 0);        // low approach edge (player side)
+    profile.lineTo(L, H);        // top lip
+    profile.lineTo(L, 0);
+    profile.closePath();
+    const geo = new THREE.ExtrudeGeometry(profile, { depth: W, bevelEnabled: false });
+    geo.translate(0, 0, -W / 2);
+    const mat = new THREE.MeshStandardMaterial({ color: 0x8d6a35, metalness: 0.3, roughness: 0.7 });
+    const wedge = new THREE.Mesh(geo, mat);
+    wedge.rotation.y = Math.PI / 2; // profile +x → world -z (rises away from player)
+    wedge.castShadow = true;
+    g.add(wedge);
+
+    // hazard-striped back face so it reads clearly at speed
+    const face = new THREE.Mesh(
+      new THREE.PlaneGeometry(W, Math.hypot(L, H)),
+      new THREE.MeshStandardMaterial({ map: HAZARD, roughness: 0.8 })
+    );
+    face.position.set(0, H / 2 + 0.01, -L / 2);
+    face.rotation.x = -Math.atan2(L, H);
+    g.add(face);
+
+    // edge marker glows
+    [-1, 1].forEach((side) => {
+      const m = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: GLOW_WARM, color: 0xffcf6a, transparent: true,
+        blending: THREE.AdditiveBlending, depthWrite: false,
+      }));
+      m.scale.setScalar(0.8);
+      m.position.set(side * (W / 2 - 0.1), H + 0.2, -L);
+      g.add(m);
+    });
+    return g;
+  }
+
+  /** Concrete lane blocker with hazard stripes — stops you dead. */
+  function makeBlocker() {
+    const g = new THREE.Group();
+    const W = 3.2;
+    const base = new THREE.Mesh(
+      new THREE.BoxGeometry(W, 1.05, 0.85),
+      new THREE.MeshStandardMaterial({ color: 0x9b9b95, roughness: 0.9 })
+    );
+    base.position.y = 0.55;
+    base.castShadow = true;
+    g.add(base);
+
+    const stripeTex = HAZARD.clone();
+    stripeTex.needsUpdate = true;
+    stripeTex.repeat.set(2, 1);
+    const stripes = new THREE.Mesh(
+      new THREE.PlaneGeometry(W, 0.5),
+      new THREE.MeshStandardMaterial({ map: stripeTex, roughness: 0.8 })
+    );
+    stripes.position.set(0, 0.75, -0.44);
+    stripes.rotation.y = Math.PI;
+    g.add(stripes);
+
+    // warning beacon
+    const beacon = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: GLOW_RED, color: 0xff5040, transparent: true,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    }));
+    beacon.scale.setScalar(1.1);
+    beacon.position.set(0, 1.35, 0);
+    g.add(beacon);
     return g;
   }
 
@@ -335,5 +312,5 @@ window.RushScene = (function () {
 
   const TRAFFIC_COLORS = [0x3f7fc4, 0x8e44ad, 0x239b56, 0xa93226, 0xd4ac0d, 0x839192, 0x2e4053, 0xdde0e3];
 
-  return { build, makeCar, makeCoin, TRAFFIC_COLORS, roadWidth };
+  return { build, makeCar, makeCoin, makeRamp, makeBlocker, TRAFFIC_COLORS, roadWidth };
 })();

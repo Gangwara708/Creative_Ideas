@@ -21,8 +21,10 @@ window.RushUI = (function () {
   UI.prototype.updateHUD = function (r) {
     this.el.score.textContent = Math.floor(r.score).toLocaleString();
     this.el.coinsLine.innerHTML = 'Coins: <b>' + r.coins + '</b> · ' + (r.distance / 1000).toFixed(2) + ' km';
-    // arcade speedo: scale m/s to a fun km/h-style number
-    this.el.speedVal.textContent = Math.round(r.speed * 3.6);
+    // arcade speedo: scale m/s to a fun km/h-style number; R = reverse gear
+    const kmh = Math.round(Math.abs(r.speed) * 3.6);
+    this.el.speedVal.textContent = r.reversing ? 'R ' + kmh : String(kmh);
+    this.el.speedVal.style.color = r.reversing ? '#ff9f8a' : '';
     this.el.nitroFill.style.width = (r.nitro / window.CFG.NITRO_MAX * 100) + '%';
 
     const hp = r.health / window.CFG.MAX_HEALTH;
@@ -57,6 +59,7 @@ window.RushUI = (function () {
       <div class="stat-grid">
         <div><div class="num">${(r.distance / 1000).toFixed(2)}</div><div class="cap">km driven</div></div>
         <div><div class="num">${r.coins}</div><div class="cap">coins</div></div>
+        <div><div class="num">${r.jumps || 0}</div><div class="cap">jumps</div></div>
         <div><div class="num">${best.toLocaleString()}</div><div class="cap">best score</div></div>
       </div>
       <button class="btn" id="overlay-btn">Drive Again</button>

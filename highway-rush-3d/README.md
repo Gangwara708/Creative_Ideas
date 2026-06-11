@@ -29,12 +29,22 @@ python3 -m http.server 8001
 | --- | --- |
 | Steer | `←` `→` or `A` `D` (touch: tap left/right half of screen) |
 | Accelerate | `↑` or `W` |
-| Brake | `↓` or `S` |
+| Brake / **Reverse** | `↓` or `S` — hold past a stop to engage reverse gear |
 | Nitro boost | hold `SPACE` (or left `Shift`) |
 
 ## 🏁 How it works
 
-- **Endless highway** — traffic spawns faster the longer you survive.
+- **Endless curving highway** — the road bends left and right in flowing
+  sections, and curves physically pull your car toward the outside, so you
+  have to steer into them to hold your line. The whole world (lamps, rails,
+  buildings, traffic, coins) follows every bend.
+- **Ramps**: hit the hazard-striped wedges at speed to **jump** (+120) —
+  while airborne you fly clean over traffic and blockers.
+- **Blockers**: concrete barriers stop you dead and cost health. You can't
+  push through them — hold `↓` to engage **reverse gear** (steering flips,
+  reversing lights come on), back out, and drive around. The speedo shows
+  `R` while you're backing up.
+- **Endless traffic** — spawns faster the longer you survive.
 - **Near misses**: pass a car closely at high speed for **+150 points and a nitro refill**. Risk pays.
 - **Coins** (+50 each) appear in rows down the lanes.
 - **Damage**: head-on hits cost a third of your health; glancing scrapes cost less and slow you down. Health gone = run over.

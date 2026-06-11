@@ -161,5 +161,23 @@ window.Textures = (function () {
     return tex;
   }
 
-  return { asphalt, grass, facade, sky, glow, lightPool, envMap };
+  // ---- Hazard stripes (blockers / ramp faces) ----
+  function hazard() {
+    const c = canvas(128, 64), ctx = c.getContext('2d');
+    ctx.fillStyle = '#d8a012';
+    ctx.fillRect(0, 0, 128, 64);
+    ctx.fillStyle = '#15161a';
+    for (let x = -64; x < 160; x += 32) {
+      ctx.beginPath();
+      ctx.moveTo(x, 64); ctx.lineTo(x + 16, 64);
+      ctx.lineTo(x + 48, 0); ctx.lineTo(x + 32, 0);
+      ctx.closePath(); ctx.fill();
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.encoding = THREE.sRGBEncoding;
+    return tex;
+  }
+
+  return { asphalt, grass, facade, sky, glow, lightPool, envMap, hazard };
 })();

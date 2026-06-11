@@ -9,6 +9,12 @@ window.CFG = {
   ROAD_LENGTH: 400,          // visible scrolling strip
   SHOULDER: 2.2,
 
+  // --- Track segments (curves) ---
+  SEG_LEN: 5,                // metres per road segment
+  SEG_COUNT: 72,             // ring buffer size (must stay divisible by 12)
+  REAR_M: 45,                // road kept behind the player (reverse headroom)
+  CURVE_PULL: 1.0,           // how hard curves drag you outward
+
   // --- Player car ---
   MAX_SPEED: 62,             // m/s (~220 km/h on the speedo)
   NITRO_SPEED: 80,
@@ -16,7 +22,8 @@ window.CFG = {
   BRAKE: 36,
   DRAG: 6,                   // passive slowdown
   STEER_SPEED: 14,           // lateral m/s at full speed
-  MIN_SPEED: 8,
+  IDLE_SPEED: 10,            // auto-cruise speed with no input
+  REVERSE_MAX: 9,            // top speed in reverse gear
 
   // --- Nitro ---
   NITRO_MAX: 100,
@@ -39,6 +46,16 @@ window.CFG = {
   NEAR_MISS_DIST: 2.3,       // lateral metres that count as "near"
   COIN_VALUE: 50,
   COIN_SPAWN_CHANCE: 0.45,   // per spawn tick
+
+  // --- Ramps & blockers ---
+  RAMP_LENGTH: 4.2,
+  RAMP_HEIGHT: 1.5,
+  JUMP_VY: 11,               // launch vertical speed at full pace
+  JUMP_GRAVITY: 20,
+  JUMP_BONUS: 120,
+  OBSTACLE_INTERVAL: 3.2,    // average seconds between obstacle spawns
+  RAMP_SHARE: 0.45,          // fraction of obstacles that are ramps
+  BLOCKER_DAMAGE: 18,
 
   // --- Damage ---
   MAX_HEALTH: 100,
