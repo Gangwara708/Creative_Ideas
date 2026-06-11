@@ -41,6 +41,23 @@ python3 -m http.server 8001
 - **Nitro** burns fast, regenerates slowly, and cranks the camera FOV for that speed rush.
 - **High score** is saved in your browser (localStorage).
 
+## 🌆 Graphics
+
+The whole look is procedural, tuned for a cinematic dusk drive:
+
+- **ACES filmic tone mapping** + sRGB output for film-like color.
+- **Dusk sky dome** with a glowing low sun on the horizon.
+- **Procedural textures** drawn on canvas at load: cracked asphalt with
+  tire-wear tracks (and the texture *scrolls* with your speed), patchy
+  grass, and building facades with randomly lit windows.
+- **Real car bodies**: extruded side-profile silhouettes with metallic
+  paint, reflective glass canopies, alloy rims, emissive head/taillights
+  with glow, and a spoiler + exhaust tips on the player car.
+- **Environment reflections** on paint, glass, and rims via a generated cubemap.
+- **Working headlight beam** (a real spotlight) lighting the road ahead.
+- **Street lamps** with glow and pooled light on the asphalt, plus guard rails.
+- **Particles**: nitro flames from the exhausts, crash sparks, coin bursts.
+
 ## 🚗 Pick your ride
 
 Four original paint jobs at the start screen — Blaze, Frostbite, Venom, and Neon. (Purely cosmetic… for now.)

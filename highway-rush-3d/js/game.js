@@ -15,11 +15,15 @@ window.RushGame = (function () {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.15;
 
-    this.camera = new THREE.PerspectiveCamera(62, 1, 0.1, 400);
+    this.camera = new THREE.PerspectiveCamera(62, 1, 0.1, 700);
 
     const built = window.RushScene.build();
     Object.assign(this, built);
+    this.fx = new window.FX(this.scene);
 
     this.clock = new THREE.Clock();
     this.state = 'menu';   // menu | driving | over
@@ -40,9 +44,8 @@ window.RushGame = (function () {
   // Run setup
   // ---------------------------------------------------------
   Game.prototype.startRun = function (carColor) {
-    // recolor player body
-    const body = this.player.children[0];
-    body.material.color.setHex(carColor);
+    // recolor player body paint
+    this.player.userData.bodyMat.color.setHex(carColor);
 
     // clear leftovers
     this.traffic.forEach((t) => this.scene.remove(t.mesh));
@@ -108,6 +111,7 @@ window.RushGame = (function () {
       this._scrollWorld(10 * dt);
     }
 
+    this.fx.update(dt);
     this._updateCamera(dt);
     this.renderer.render(this.scene, this.camera);
   };
@@ -163,6 +167,21 @@ window.RushGame = (function () {
       r.spawnTimer = C.SPAWN_INTERVAL_START + (C.SPAWN_INTERVAL_MIN - C.SPAWN_INTERVAL_START) * t;
     }
 
+    // --- nitro flames from the exhaust tips ---
+    if (r.boosting && r.nitro > 0) {
+      const px2 = this.player.position.x;
+      [-0.45, 0.45].forEach((x) => {
+        this.fx.spawn({
+          pos: new THREE.Vector3(px2 + x, 0.4, 2.4),
+          vel: new THREE.Vector3((Math.random() - 0.5) * 1.5, Math.random() * 1.2, 9 + Math.random() * 5),
+          color: Math.random() < 0.6 ? 0x46b8ff : 0x9fdcff,
+          size: 0.45 + Math.random() * 0.3,
+          life: 0.22 + Math.random() * 0.15,
+          drag: 0.9,
+        });
+      });
+    }
+
     // --- move traffic, collisions, near misses ---
     this._stepTraffic(dt, ds);
     this._stepCoins(ds, dt);
@@ -175,6 +194,10 @@ window.RushGame = (function () {
     this._scrollOffset += ds;
     this.markings.position.z = this._scrollOffset % 8;
     this.scenery.position.z = this._scrollOffset % 30;
+    // scroll the asphalt/grass textures so the surface itself moves
+    this.scrollTextures.forEach((st) => {
+      st.tex.offset.y = (this._scrollOffset / st.unit) % 1;
+    });
   };
 
   // ---------------------------------------------------------
@@ -249,6 +272,12 @@ window.RushGame = (function () {
     t.mesh.position.z -= 6;
     t.mesh.position.x += Math.sign(t.mesh.position.x - this.player.position.x || 1) * 1.2;
 
+    // sparks at the impact point
+    const impact = this.player.position.clone().lerp(t.mesh.position, 0.5);
+    impact.y = 0.7;
+    this.fx.burst(impact, 0xffb24d, glancing ? 12 : 24, glancing ? 7 : 11, 0.4);
+    this.fx.burst(impact, 0xfff1c9, 6, 5, 0.3);
+
     this.ui.pop(glancing ? 'SCRAPE!' : 'CRASH!', 'crash');
     this._shake = 0.5;
 
@@ -287,6 +316,7 @@ window.RushGame = (function () {
       if (Math.abs(dz) < C.CAR_HALF_L && Math.abs(dx) < C.CAR_HALF_W + 0.6) {
         r.coins += 1;
         r.score += C.COIN_VALUE;
+        this.fx.burst(c.mesh.position.clone(), 0xffd166, 8, 4, 0.35);
         this.ui.pop('+' + C.COIN_VALUE, 'coin');
         this.scene.remove(c.mesh);
         this.coins.splice(i, 1);
