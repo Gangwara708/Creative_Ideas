@@ -1,0 +1,33 @@
+<div class="topbar">
+  <div class="container topbar__inner">
+    <span class="topbar__item">📞 <a href="tel:{{ site.contact.phoneHref }}">{{ site.contact.phone }}</a></span>
+    <span class="topbar__item topbar__item--hide-sm">🕑 {{ site.contact.hours }}</span>
+    <span class="topbar__item topbar__item--push">Counselling in Hindi &amp; English</span>
+  </div>
+</div>
+
+<header class="header" id="site-header">
+  <div class="container header__inner">
+    <a class="logo" href="{{ page.root }}index.html" aria-label="{{ site.brand }} — home">
+      <img src="{{ page.root }}assets/img/logo.svg" alt="" width="38" height="38" aria-hidden="true">
+      <span class="logo__text">
+        <strong>{{ site.brandShort }}</strong>
+        <small>{{ site.tagline }}</small>
+      </span>
+    </a>
+
+    <nav class="nav" id="primary-nav" aria-label="Primary">
+      <ul class="nav__list">
+        {{& navHtml }}
+      </ul>
+      <div class="nav__actions">
+        <a class="btn btn--ghost btn--sm" href="tel:{{ site.contact.phoneHref }}">Call now</a>
+        <a class="btn btn--primary btn--sm" href="{{ page.root }}contact.html">Book free call</a>
+      </div>
+    </nav>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>

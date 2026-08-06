@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title }}</title>
+<meta name="description" content="{{ page.description }}">
+<meta name="robots" content="{{ page.noindex }}">
+<link rel="canonical" href="{{ page.url }}">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.brand }}">
+<meta property="og:title" content="{{ page.title }}">
+<meta property="og:description" content="{{ page.description }}">
+<meta property="og:url" content="{{ page.url }}">
+<meta property="og:image" content="{{ page.ogImage }}">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+
+<script>document.documentElement.classList.add('js');</script>
+<meta name="theme-color" content="#12224a">
+<link rel="icon" href="{{ page.root }}assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ page.root }}assets/img/favicon.svg">
+<link rel="manifest" href="{{ page.root }}site.webmanifest">
+
+<link rel="preload" href="{{ page.root }}assets/fonts/plus-jakarta-sans-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{{ page.root }}assets/fonts/fraunces-600-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ page.root }}assets/css/fonts.css">
+<link rel="stylesheet" href="{{ page.root }}assets/css/style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "{{& site.brand }}",
+  "description": "{{& page.jsonDescription }}",
+  "url": "{{ site.url }}",
+  "telephone": "{{ site.contact.phone }}",
+  "email": "{{ site.contact.email }}",
+  "priceRange": "₹₹",
+  "areaServed": "IN",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ site.contact.addressLine }}",
+    "addressLocality": "{{ site.contact.city }}",
+    "addressRegion": "{{ site.contact.state }}",
+    "postalCode": "{{ site.contact.postalCode }}",
+    "addressCountry": "IN"
+  },
+  "openingHours": "Mo-Sa 10:00-19:00",
+  "sameAs": ["{{ site.social.instagram }}", "{{ site.social.youtube }}", "{{ site.social.linkedin }}"]
+}
+</script>
+{{& site.analyticsHtml }}
+{{& page.headExtra }}
+</head>
+<body data-page="{{ page.id }}">
+<a class="skip-link" href="#main">Skip to content</a>
+{{> header }}
+<main id="main">
+{{{ content }}}
+</main>
+{{> footer }}
+{{> floating-cta }}
+<script src="{{ page.root }}assets/js/site.js" defer></script>
+</body>
+</html>

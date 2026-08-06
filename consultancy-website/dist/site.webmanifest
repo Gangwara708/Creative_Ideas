@@ -1,0 +1,12 @@
+{
+  "name": "Disha Consultancy",
+  "short_name": "Disha",
+  "description": "Career, education and life-direction consulting for students, parents and professionals in India.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf8f3",
+  "theme_color": "#12224a",
+  "icons": [
+    { "src": "/assets/img/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,97 @@
+<!--
+{
+  "id": "contact",
+  "title": "Contact Us | Disha Consultancy",
+  "description": "Book a free 15-minute discovery call, or reach us on WhatsApp, phone or email. Online counselling across India, in person by appointment."
+}
+-->
+
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="index.html">Home</a> › <span>Contact</span>
+    </nav>
+    <h1>Let's talk about your next step</h1>
+    <p class="lede">
+      Fill the form and we will call you back within one working day. In a hurry?
+      WhatsApp is the fastest way to reach us.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split split--form">
+    <div>
+      <span class="eyebrow">Book a free call</span>
+      <h2>Tell us where you are stuck</h2>
+      <p class="lede mb-24">
+        The more context you give, the more useful the first call is. Nothing you write
+        here is shared with anyone outside our counselling team.
+      </p>
+      {{> lead-form }}
+    </div>
+
+    <aside class="sticky-side">
+      <div class="card">
+        <h3>Reach us directly</h3>
+        <ul class="card__list mt-16">
+          <li><strong>Phone:</strong> <a href="tel:{{ site.contact.phoneHref }}">{{ site.contact.phone }}</a></li>
+          <li><strong>WhatsApp:</strong> <a href="{{& site.contact.whatsappHref }}" rel="noopener" target="_blank">Chat now</a></li>
+          <li><strong>Email:</strong> <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a></li>
+          <li><strong>Hours:</strong> {{ site.contact.hours }}</li>
+        </ul>
+        <div class="btn-row mt-24">
+          <a class="btn btn--accent btn--block" href="{{& site.contact.whatsappHref }}" rel="noopener" target="_blank">WhatsApp us</a>
+          <a class="btn btn--ghost btn--block" href="tel:{{ site.contact.phoneHref }}">Call {{ site.contact.phone }}</a>
+        </div>
+      </div>
+
+      <div class="card mt-24">
+        <h3>Visit the office</h3>
+        <p>{{ site.contact.fullAddress }}</p>
+        <p class="muted">In-person sessions by prior appointment only, so that someone is there to receive you.</p>
+        <a class="card__link" href="https://www.google.com/maps/search/?api=1&query={{ site.contact.mapEmbedQuery }}" rel="noopener" target="_blank">Open in Google Maps</a>
+      </div>
+
+      <div class="card mt-24">
+        <h3>What happens next</h3>
+        <ol class="card__list">
+          <li>We read your enquiry the same day</li>
+          <li>A counsellor calls you within one working day</li>
+          <li>15-minute discovery call, free</li>
+          <li>You get a written recommendation and quote</li>
+          <li>You decide. No follow-up pressure.</li>
+        </ol>
+      </div>
+
+      <div class="callout mt-24">
+        <strong>Safety note:</strong> we will never ask for your exam-portal password, OTP,
+        or payment to a personal account. Fees are paid only to our official business
+        account or payment link.
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="section section--paper">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Before you write in</span>
+      <h2>Three things that make the first call better</h2>
+    </div>
+    <div class="grid grid--3">
+      <div class="card">
+        <h3>Bring the numbers</h3>
+        <p>Score, percentile, rank, category, domicile state, board marks, or your current CTC and notice period — whichever applies.</p>
+      </div>
+      <div class="card">
+        <h3>Bring the constraint</h3>
+        <p>Budget ceiling, cities you cannot move to, family expectations. Constraints shape advice more than ambitions do.</p>
+      </div>
+      <div class="card">
+        <h3>Bring the real question</h3>
+        <p>Not "what should I do", but "should I do A or B, and why". A sharper question gets a sharper answer.</p>
+      </div>
+    </div>
+  </div>
+</section>

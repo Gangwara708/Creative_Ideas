@@ -1,0 +1,29 @@
+<aside class="sticky-side">
+  <div class="card">
+    <span class="badge badge--navy">Free first step</span>
+    <h3 class="mt-16">Talk to a counsellor</h3>
+    <p>
+      A 15-minute discovery call, at no cost. We will tell you honestly whether this
+      service fits your situation.
+    </p>
+    <div class="btn-row mt-16">
+      <a class="btn btn--primary btn--block" href="{{ page.root }}contact.html">Book free call</a>
+      <a class="btn btn--ghost btn--block" href="{{& site.contact.whatsappHref }}" rel="noopener" target="_blank">WhatsApp us</a>
+    </div>
+    <ul class="card__list mt-16">
+      <li>{{ site.contact.hours }}</li>
+      <li><a href="tel:{{ site.contact.phoneHref }}">{{ site.contact.phone }}</a></li>
+      <li><a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a></li>
+    </ul>
+  </div>
+
+  <div class="card mt-24">
+    <h3>Also consider</h3>
+    <ul class="card__list">
+      <li><a href="{{ page.root }}pricing.html">Pricing &amp; packages</a></li>
+      <li><a href="{{ page.root }}faq.html">Frequently asked questions</a></li>
+      <li><a href="{{ page.root }}blog/index.html">Free guides &amp; insights</a></li>
+      <li><a href="{{ page.root }}about.html">Who we are</a></li>
+    </ul>
+  </div>
+</aside>

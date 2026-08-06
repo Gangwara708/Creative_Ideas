@@ -1,0 +1,65 @@
+{
+  "_comment": "EDIT THIS FILE FIRST. Every page pulls brand name, phone, email and links from here. Change once, run `npm run build`, and the whole website updates.",
+
+  "brand": "Disha Consultancy",
+  "brandShort": "Disha",
+  "tagline": "Clarity for every crossroad",
+  "legalName": "Disha Consultancy Services",
+  "url": "https://www.example.com",
+  "locale": "en-IN",
+
+  "founder": {
+    "name": "Founder Name",
+    "role": "Founder & Lead Career Consultant",
+    "credentials": "M.A. Psychology · 12+ years in career guidance",
+    "bio": "Placeholder bio — replace with the real founder story before launch."
+  },
+
+  "contact": {
+    "phone": "+91 90000 00000",
+    "phoneHref": "+919000000000",
+    "whatsapp": "919000000000",
+    "email": "hello@example.com",
+    "supportEmail": "support@example.com",
+    "hours": "Mon–Sat, 10:00 AM – 7:00 PM IST",
+    "addressLine": "Office No. 00, Example Tower",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "postalCode": "226001",
+    "country": "IN",
+    "mapEmbedQuery": "Lucknow, Uttar Pradesh"
+  },
+
+  "social": {
+    "instagram": "https://instagram.com/",
+    "youtube": "https://youtube.com/",
+    "linkedin": "https://linkedin.com/",
+    "facebook": "https://facebook.com/"
+  },
+
+  "forms": {
+    "endpoint": "",
+    "_endpointHelp": "Leave empty and the form falls back to WhatsApp/email so the site works on day one. Set it to a Web3Forms/Formspree URL, or to /api/lead if you deploy the included backend.",
+    "successPage": "thank-you.html"
+  },
+
+  "analytics": {
+    "ga4Id": "",
+    "_help": "Paste your G-XXXXXXX measurement ID. Empty = no tracking script is emitted (and no cookie banner needed)."
+  },
+
+  "legal": {
+    "entityType": "Sole Proprietorship",
+    "gstin": "",
+    "cinOrUdyam": "",
+    "lastUpdated": "6 August 2026"
+  },
+
+  "pricing": {
+    "currency": "₹",
+    "discovery": "Free",
+    "session": "1,500",
+    "counsellingPack": "4,999",
+    "admissionPack": "14,999"
+  }
+}

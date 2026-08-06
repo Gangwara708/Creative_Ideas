@@ -1,0 +1,17 @@
+# Security + caching headers.
+# Cloudflare Pages and Netlify both read this file automatically.
+# (On Vercel the same rules live in vercel.json; on Nginx see docs/03-deployment.md.)
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # 'unsafe-inline' on script-src is required by the inline JSON-LD structured
+  # data and the GA4 snippet. Drop it only if you move both to external files.
+  # Fonts are self-hosted, so no third-party style/font origins are needed.
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; frame-ancestors 'self'
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

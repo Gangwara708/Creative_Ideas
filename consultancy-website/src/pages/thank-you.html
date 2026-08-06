@@ -1,0 +1,45 @@
+<!--
+{
+  "id": "thank-you",
+  "title": "Thank you — we have your enquiry | Disha Consultancy",
+  "description": "Your enquiry has reached our counselling team. Here is what happens next.",
+  "noindex": true
+}
+-->
+
+<section class="section">
+  <div class="container" style="max-width:720px;text-align:center">
+    <div class="card__icon card__icon--teal" style="margin:0 auto 1.5rem;width:72px;height:72px;font-size:2rem">✅</div>
+    <h1>Thank you — we have your enquiry</h1>
+    <p class="lede" style="margin-inline:auto">
+      A counsellor will call you on the number you provided, usually within one working
+      day ({{ site.contact.hours }}).
+    </p>
+
+    <div class="card mt-32" style="text-align:left">
+      <h3>What happens next</h3>
+      <ol class="card__list mt-16">
+        <li>We read your enquiry today and assign it to the right counsellor</li>
+        <li>You get a call for a free 15-minute discovery conversation</li>
+        <li>We send a written recommendation and, if relevant, a fee quote</li>
+        <li>You decide — there is no follow-up pressure from us either way</li>
+      </ol>
+    </div>
+
+    <div class="callout mt-24" style="text-align:left">
+      <strong>Need to reach us sooner?</strong> WhatsApp is fastest, or call
+      <a href="tel:{{ site.contact.phoneHref }}">{{ site.contact.phone }}</a> during working hours.
+    </div>
+
+    <div class="btn-row mt-32" style="justify-content:center">
+      <a class="btn btn--accent btn--lg" href="{{& site.contact.whatsappHref }}" rel="noopener" target="_blank">WhatsApp us now</a>
+      <a class="btn btn--ghost btn--lg" href="blog/index.html">Read a guide while you wait</a>
+    </div>
+
+    <p class="muted mt-32">
+      Didn't mean to submit that, or want your details deleted? Email
+      <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a> and we will
+      remove them.
+    </p>
+  </div>
+</section>

@@ -1,0 +1,102 @@
+<form class="lead-form" id="lead-form" novalidate
+      data-endpoint="{{ site.forms.endpoint }}"
+      data-whatsapp="{{ site.contact.whatsapp }}"
+      data-email="{{ site.contact.email }}"
+      data-success="{{ page.root }}{{ site.forms.successPage }}">
+
+  <div class="field-row">
+    <div class="field">
+      <label for="lf-name">Full name <span aria-hidden="true">*</span></label>
+      <input id="lf-name" name="name" type="text" autocomplete="name" required placeholder="e.g. Ananya Sharma">
+      <p class="field__error" data-error-for="name"></p>
+    </div>
+    <div class="field">
+      <label for="lf-phone">Mobile number <span aria-hidden="true">*</span></label>
+      <input id="lf-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel"
+             required pattern="[0-9+ ]{10,15}" placeholder="10-digit mobile">
+      <p class="field__error" data-error-for="phone"></p>
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="lf-email">Email</label>
+      <input id="lf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com">
+      <p class="field__error" data-error-for="email"></p>
+    </div>
+    <div class="field">
+      <label for="lf-city">City</label>
+      <input id="lf-city" name="city" type="text" autocomplete="address-level2" placeholder="e.g. Lucknow">
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="lf-role">I am a <span aria-hidden="true">*</span></label>
+      <select id="lf-role" name="role" required>
+        <option value="">Select one</option>
+        <option>Student (Class 9–12)</option>
+        <option>Student (dropper / repeater)</option>
+        <option>Parent or guardian</option>
+        <option>College student</option>
+        <option>Working professional</option>
+        <option>Other</option>
+      </select>
+      <p class="field__error" data-error-for="role"></p>
+    </div>
+    <div class="field">
+      <label for="lf-service">What do you need help with? <span aria-hidden="true">*</span></label>
+      <select id="lf-service" name="service" required>
+        <option value="">Select one</option>
+        <option>NEET / medical career guidance</option>
+        <option>JEE / IIT / engineering guidance</option>
+        <option>Class 9–12 stream &amp; subject choice</option>
+        <option>Job search, resume &amp; interviews</option>
+        <option>Career switch or promotion planning</option>
+        <option>Study abroad</option>
+        <option>General life direction / clarity</option>
+        <option>Something else</option>
+      </select>
+      <p class="field__error" data-error-for="service"></p>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="lf-message">Tell us your situation in a few lines</label>
+    <textarea id="lf-message" name="message" rows="4"
+      placeholder="e.g. NEET 2026 me 480 marks aaye hain, agla step samajh nahi aa raha — repeat karun ya BSc lun?"></textarea>
+    <p class="field__hint">Hindi or English — jo comfortable ho.</p>
+  </div>
+
+  <div class="field field--check">
+    <input id="lf-consent" name="consent" type="checkbox" required>
+    <label for="lf-consent">
+      I agree to be contacted on this number/email about my enquiry, and I accept the
+      <a href="{{ page.root }}legal/privacy-policy.html">privacy policy</a>.
+      <span aria-hidden="true">*</span>
+    </label>
+    <p class="field__error" data-error-for="consent"></p>
+  </div>
+
+  <div class="field field--check">
+    <input id="lf-minor" name="guardian_consent" type="checkbox">
+    <label for="lf-minor">
+      The student is under 18 and this enquiry is being submitted by a parent or legal guardian.
+    </label>
+  </div>
+
+  <!-- Spam trap: real people never see or fill this. -->
+  <div class="hp" aria-hidden="true">
+    <label for="lf-website">Website</label>
+    <input id="lf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+  </div>
+
+  <button class="btn btn--primary btn--block btn--lg" type="submit" data-submit-label="Request my free call">
+    Request my free call
+  </button>
+
+  <p class="lead-form__status" role="status" aria-live="polite"></p>
+  <p class="lead-form__trust">
+    🔒 Your details stay with our counselling team. No spam, no selling of data — ever.
+  </p>
+</form>

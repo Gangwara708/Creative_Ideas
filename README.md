@@ -1,4 +1,15 @@
-# 🎮 Creative Ideas — Original Browser Games
+# 💡 Creative Ideas
+
+Independent projects, each self-contained in its own directory.
+
+| Project | What it is |
+| --- | --- |
+| 🧭 [**Consultancy Website**](consultancy-website/) | A complete, deploy-ready career & education consultancy website (22 pages, zero dependencies) plus A–Z documentation for registering and launching the business behind it |
+| 🎮 [Browser games](#-original-browser-games) | Original 3D games built with Three.js |
+
+---
+
+## 🎮 Original Browser Games
 
 A collection of **original, fully free 3D browser games** built with
 [Three.js](https://threejs.org/). No installs, no accounts, no paywalls —

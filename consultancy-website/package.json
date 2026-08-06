@@ -1,0 +1,19 @@
+{
+  "name": "consultancy-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Career, education and life-direction consultancy website — static build, zero dependencies.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "check": "node tools/build.mjs && node tools/check.mjs",
+    "dev": "node tools/serve.mjs",
+    "fonts": "node tools/fetch-fonts.mjs",
+    "og": "node tools/make-og-image.mjs",
+    "server": "node backend/server.js",
+    "start": "node tools/build.mjs && node backend/server.js"
+  }
+}

@@ -1,0 +1,152 @@
+<!--
+{
+  "id": "pricing",
+  "title": "Pricing & Packages | Disha Consultancy",
+  "description": "Transparent counselling fees: free discovery call, single sessions, student assessment packages and full admission-season support. No hidden charges."
+}
+-->
+
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="index.html">Home</a> › <span>Pricing</span>
+    </nav>
+    <h1>Published fees. No hidden charges.</h1>
+    <p class="lede">
+      You should know what something costs before you get on a call about it. These are
+      our standard fees — the only variable is which package fits your situation, and the
+      free call decides that.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid--4">
+      <div class="price-card reveal">
+        <span class="badge badge--teal">Start here</span>
+        <h3 class="mt-16">Discovery call</h3>
+        <div class="price-card__amount">{{ site.pricing.discovery }}</div>
+        <p class="muted">15 minutes · phone or video</p>
+        <ul>
+          <li>Understand your situation</li>
+          <li>Honest view on whether we can help</li>
+          <li>Recommended next step</li>
+          <li>Written fee quote if you proceed</li>
+          <li class="is-off">No assessment or documents</li>
+        </ul>
+        <a class="btn btn--ghost btn--block" href="contact.html">Book free call</a>
+      </div>
+
+      <div class="price-card reveal">
+        <h3>Single session</h3>
+        <div class="price-card__amount">{{ site.pricing.currency }}{{ site.pricing.session }}<small> + GST</small></div>
+        <p class="muted">60 minutes · one topic</p>
+        <ul>
+          <li>One focused counselling session</li>
+          <li>Summary notes by email</li>
+          <li>One follow-up question by email</li>
+          <li class="is-off">No psychometric assessment</li>
+          <li class="is-off">No season-long support</li>
+        </ul>
+        <a class="btn btn--ghost btn--block" href="contact.html">Book a session</a>
+      </div>
+
+      <div class="price-card price-card--highlight reveal">
+        <span class="price-card__tag">Most popular</span>
+        <h3 class="mt-16">Student guidance pack</h3>
+        <div class="price-card__amount">{{ site.pricing.currency }}{{ site.pricing.counsellingPack }}<small> + GST</small></div>
+        <p class="muted">Class 9–12 · 2–3 weeks</p>
+        <ul>
+          <li>Full psychometric assessment</li>
+          <li>60-min student session</li>
+          <li>30-min parent debrief</li>
+          <li>Written career roadmap</li>
+          <li>30 days of email follow-up</li>
+        </ul>
+        <a class="btn btn--primary btn--block" href="contact.html">Book the pack</a>
+      </div>
+
+      <div class="price-card reveal">
+        <h3>Admission season support</h3>
+        <div class="price-card__amount">{{ site.pricing.currency }}{{ site.pricing.admissionPack }}<small> + GST</small></div>
+        <p class="muted">NEET / JEE / abroad · full season</p>
+        <ul>
+          <li>Everything in a single session</li>
+          <li>Choice-list construction &amp; review</li>
+          <li>Round-by-round strategy calls</li>
+          <li>Document &amp; deadline checklist</li>
+          <li>Priority WhatsApp support in season</li>
+        </ul>
+        <a class="btn btn--ghost btn--block" href="contact.html">Enquire</a>
+      </div>
+    </div>
+
+    <div class="callout callout--navy mt-48">
+      <strong>Before you launch:</strong> replace these placeholder amounts with your real
+      fees in <code>site.config.json</code>, and confirm whether GST applies to you (it is
+      mandatory above the turnover threshold — see the legal guide in the repository's
+      <code>docs/</code> folder). If you are not GST-registered, remove the "+ GST" text.
+    </div>
+  </div>
+</section>
+
+<section class="section section--paper">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">The fine print, up front</span>
+      <h2>What is and isn't included</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Question</th><th>Answer</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Is the discovery call really free?</td><td>Yes. 15 minutes, no card details, no obligation.</td></tr>
+          <tr><td>When do I pay?</td><td>After the discovery call, before the paid session is scheduled.</td></tr>
+          <tr><td>How do I pay?</td><td>UPI, bank transfer or card via our payment link. A GST invoice is issued for every payment.</td></tr>
+          <tr><td>Do you take cash?</td><td>Only for in-person sessions, against a receipt.</td></tr>
+          <tr><td>Can I reschedule?</td><td>Yes, free of charge with at least 24 hours' notice. See the <a href="legal/refund-policy.html">refund policy</a>.</td></tr>
+          <tr><td>Can I get a refund?</td><td>Full refund before the first paid session begins. After that it is prorated — full terms in the <a href="legal/refund-policy.html">refund policy</a>.</td></tr>
+          <tr><td>Are college or exam fees included?</td><td>No. You pay all third-party fees (application, counselling registration, tests) directly to those bodies.</td></tr>
+          <tr><td>Do you offer EMI?</td><td>Not currently. Larger packages can be split into two instalments on request.</td></tr>
+          <tr><td>Is there any concession?</td><td>Yes — a limited number of subsidised places each month for students in genuine financial need. Ask on the call; no documents needed beyond an honest conversation.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Value check</span>
+      <h2>Is this worth the money?</h2>
+      <p class="lede" style="margin-inline:auto">
+        A fair question to ask any consultant. Here is the honest arithmetic.
+      </p>
+    </div>
+    <div class="grid grid--3">
+      <div class="card">
+        <h3>The cost of a wrong year</h3>
+        <p>A repeated year of coaching plus living costs typically runs into lakhs — before counting the year itself.</p>
+      </div>
+      <div class="card">
+        <h3>The cost of a wrong seat</h3>
+        <p>A four-year private course you leave after year two is the most expensive mistake in this entire process.</p>
+      </div>
+      <div class="card">
+        <h3>The cost of a wrong switch</h3>
+        <p>A badly planned career move can cost a year of seniority and a permanent dent in your salary trajectory.</p>
+      </div>
+    </div>
+    <p class="text-center muted mt-32">
+      We are not claiming we prevent all of that. We are saying a few thousand rupees of
+      structured analysis, before the decision, is cheap insurance against it.
+    </p>
+  </div>
+</section>
+
+{{> cta-band }}

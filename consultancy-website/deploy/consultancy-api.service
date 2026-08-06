@@ -1,0 +1,54 @@
+# systemd unit for the optional lead-capture API.
+# Only needed if you run backend/server.js on your own server.
+#
+#   sudo cp deploy/consultancy-api.service /etc/systemd/system/
+#   sudo mkdir -p /etc/consultancy
+#   printf 'ADMIN_TOKEN=%s\n' "$(openssl rand -hex 24)" | sudo tee /etc/consultancy/api.env
+#   sudo chmod 600 /etc/consultancy/api.env
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now consultancy-api
+#   sudo systemctl status consultancy-api
+#
+# Logs:  sudo journalctl -u consultancy-api -f
+
+[Unit]
+Description=Consultancy website lead-capture API
+Documentation=file:/var/www/consultancy/docs/03-deployment.md
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/consultancy
+
+# ADMIN_TOKEN lives in this file, not in the unit, so it never enters git.
+EnvironmentFile=/etc/consultancy/api.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=127.0.0.1
+Environment=DATA_DIR=/var/lib/consultancy
+
+ExecStart=/usr/bin/node /var/www/consultancy/backend/server.js
+Restart=always
+RestartSec=5
+
+# --- Hardening: this process holds students' personal data ---
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/consultancy
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+MemoryMax=256M
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=consultancy-api
+
+[Install]
+WantedBy=multi-user.target

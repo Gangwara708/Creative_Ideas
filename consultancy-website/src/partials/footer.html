@@ -1,0 +1,72 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="logo logo--light" href="{{ page.root }}index.html">
+          <img src="{{ page.root }}assets/img/logo-mark-light.svg" alt="" width="38" height="38" aria-hidden="true">
+          <span class="logo__text"><strong>{{ site.brand }}</strong></span>
+        </a>
+        <p class="footer__about">
+          Independent career and life-direction consulting for students, parents and
+          working professionals across India. We help you choose the next step with
+          evidence, not guesswork.
+        </p>
+        <div class="footer__social" aria-label="Social links">
+          <a href="{{ site.social.instagram }}" rel="noopener" target="_blank">Instagram</a>
+          <a href="{{ site.social.youtube }}" rel="noopener" target="_blank">YouTube</a>
+          <a href="{{ site.social.linkedin }}" rel="noopener" target="_blank">LinkedIn</a>
+        </div>
+      </div>
+
+      <div class="footer__col">
+        <h3>Services</h3>
+        <ul>
+          <li><a href="{{ page.root }}services/neet-counselling.html">NEET &amp; medical guidance</a></li>
+          <li><a href="{{ page.root }}services/jee-counselling.html">JEE / IIT &amp; engineering</a></li>
+          <li><a href="{{ page.root }}services/student-career-guidance.html">Class 9–12 stream choice</a></li>
+          <li><a href="{{ page.root }}services/professional-career-consulting.html">Jobs &amp; career switch</a></li>
+          <li><a href="{{ page.root }}services/study-abroad.html">Study abroad</a></li>
+          <li><a href="{{ page.root }}services/life-clarity-coaching.html">Life clarity coaching</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h3>Company</h3>
+        <ul>
+          <li><a href="{{ page.root }}about.html">About us</a></li>
+          <li><a href="{{ page.root }}pricing.html">Pricing</a></li>
+          <li><a href="{{ page.root }}blog/index.html">Insights</a></li>
+          <li><a href="{{ page.root }}faq.html">FAQ</a></li>
+          <li><a href="{{ page.root }}contact.html">Contact</a></li>
+        </ul>
+        <h3 class="mt-24">Legal</h3>
+        <ul>
+          <li><a href="{{ page.root }}legal/privacy-policy.html">Privacy policy</a></li>
+          <li><a href="{{ page.root }}legal/terms.html">Terms of service</a></li>
+          <li><a href="{{ page.root }}legal/refund-policy.html">Refund &amp; cancellation</a></li>
+          <li><a href="{{ page.root }}legal/disclaimer.html">Disclaimer</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h3>Reach us</h3>
+        <ul class="footer__contact">
+          <li><a href="tel:{{ site.contact.phoneHref }}">{{ site.contact.phone }}</a></li>
+          <li><a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a></li>
+          <li>{{ site.contact.fullAddress }}</li>
+          <li>{{ site.contact.hours }}</li>
+        </ul>
+        <a class="btn btn--accent btn--sm mt-16" href="{{& site.contact.whatsappHref }}" rel="noopener" target="_blank">Chat on WhatsApp</a>
+      </div>
+    </div>
+
+    <div class="footer__bar">
+      <p>© {{ site.year }} {{ site.legalName }}. All rights reserved.</p>
+      <p class="footer__note">
+        {{ site.brand }} provides guidance and information services. We are not affiliated with
+        NTA, JoSAA, MCC, any university or any government body, and we do not guarantee
+        admission, rank, seat or employment outcomes.
+      </p>
+    </div>
+  </div>
+</footer>
