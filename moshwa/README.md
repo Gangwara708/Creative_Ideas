@@ -1,4 +1,4 @@
-# 🌙 After Dark
+# 🌙 Moshwa ❤️
 
 A private, phone-first party game for two adults (18+). No accounts, no server —
 names, safe word and scores stay in the browser's local storage.
@@ -11,11 +11,13 @@ names, safe word and scores stay in the browser's local storage.
 | 🎲 Truth or Dare | Classic, with timers and a score |
 | 🎯 Tease Dice | Action + place + duration |
 | 📲 Poke | Teasing texts and coupons to send over WhatsApp |
+| 📜 Kamasutra Deck | Positions from easy to advanced, with timers |
+| 🎬 Fantasy Theatre | Imagination-only story prompts to narrate to each other |
 | 🙈 / ⚖️ / 🌹 | Never Have I Ever, Would You Rather, Fantasy Dates |
 
-Four heat levels (Flirty → Spicy → Wild → Dark) are set in ⚙ Settings. Every card
+Five heat levels (Flirty → Spicy → Wild → Dark → Ultra) can be picked on any game screen; tick "Sirf isi level ke cards" to jump straight to one level. Every card
 can be skipped, and the safe word is shown on every screen.
 
 **Add your own cards:** edit the lists in `data.js` — one line per card.
 
-**Run:** open `index.html`, or serve the repo root and visit `/after-dark/`.
+**Run:** open `index.html`, or serve the repo root and visit `/moshwa/`.

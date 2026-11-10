@@ -11,7 +11,7 @@ game assets anywhere in this repo.
 | Game | Genre | Play |
 | --- | --- | --- |
 | 🏏 [**Super Over Cricket 3D**](cricket-3d/) | Cricket — bat an innings, then defend it against an AI chase | `cricket-3d/index.html` |
-| 🌙 [**After Dark**](after-dark/) | Couples' party game (18+) — roleplay generator, truth or dare, fantasy match, dice, pokes | `after-dark/index.html` |
+| 🌙 [**Moshwa**](moshwa/) | Couples' party game (18+) — roleplay generator, truth or dare, fantasy match, dice, pokes | `moshwa/index.html` |
 | 🏎️ [**Highway Rush 3D**](highway-rush-3d/) | Endless arcade driving — traffic, near misses, nitro, high scores | `highway-rush-3d/index.html` |
 
 ## ▶️ Quick start

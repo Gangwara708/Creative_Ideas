@@ -1,8 +1,8 @@
-/* After Dark — game logic. Sab kuch isi phone pe rehta hai (localStorage), koi server nahi. */
+/* Moshwa — game logic. Sab kuch isi phone pe rehta hai (localStorage), koi server nahi. */
 const app = document.getElementById('app');
-const S = Object.assign({ names: ['Shweta', 'Aman'], safe: 'Red', max: 2, score: [0, 0], ready: false },
-  JSON.parse(localStorage.getItem('afterdark') || '{}'));
-const save = () => localStorage.setItem('afterdark', JSON.stringify(S));
+const S = Object.assign({ names: ['King', 'Queen'], safe: 'Red', max: 2, only: false, score: [0, 0], ready: false },
+  JSON.parse(localStorage.getItem('moshwa') || '{}'));
+const save = () => localStorage.setItem('moshwa', JSON.stringify(S));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const rnd = a => a[Math.floor(Math.random() * a.length)];
 let turn = Math.random() < 0.5 ? 0 : 1, timer = null, stack = [];
@@ -22,7 +22,7 @@ function go(view, title) {
 }
 function show() {
   const [view, title] = stack[stack.length - 1];
-  document.getElementById('title').textContent = title || 'After Dark';
+  document.getElementById('title').textContent = title || 'Moshwa ❤️';
   document.getElementById('back').style.visibility = stack.length > 1 ? 'visible' : 'hidden';
   document.getElementById('safe').innerHTML = S.ready ? `Safe word: <b>${esc(S.safe)}</b> — bolte hi sab ruk jaata hai.` : '';
   app.innerHTML = '';
@@ -32,10 +32,13 @@ function show() {
 document.getElementById('back').onclick = () => { if (stack.length > 1) { clearInterval(timer); stack.pop(); show(); } };
 document.getElementById('gear').onclick = () => go(settings, 'Settings');
 
-const levelChips = () => `<div class="chips">${[1, 2, 3, 4].map(l =>
-  `<button class="chip ${S.max === l ? 'on' : ''}" data-lvl="${l}">${LEVELS[l]}</button>`).join('')}</div>`;
+const levelChips = () => `<div class="chips">${[1, 2, 3, 4, 5].map(l =>
+  `<button class="chip ${S.max === l ? 'on' : ''}" data-lvl="${l}">${LEVELS[l]}</button>`).join('')}</div>
+  <label class="only"><input type="checkbox" id="only" ${S.only ? 'checked' : ''}> Sirf isi level ke cards (seedha ${LEVELS[S.max]})</label>`;
 function bindChips() {
-  app.querySelectorAll('[data-lvl]').forEach(b => b.onclick = () => { S.max = +b.dataset.lvl; save(); Object.keys(bags).forEach(k => delete bags[k]); show(); });
+  const o = document.getElementById('only');
+  if (o) o.onchange = () => { S.only = o.checked; save(); Object.keys(bags).forEach(k => delete bags[k]); card = null; show(); };
+  app.querySelectorAll('[data-lvl]').forEach(b => b.onclick = () => { S.max = +b.dataset.lvl; save(); card = null; Object.keys(bags).forEach(k => delete bags[k]); show(); });
 }
 const scoreRow = () => `<div class="score"><span>${esc(S.names[0])}: <b>${S.score[0]}</b></span><span>${esc(S.names[1])}: <b>${S.score[1]}</b></span></div>`;
 
@@ -62,7 +65,7 @@ function settings() {
     <div class="box"><b>3 rules jo har game pe laagu hain</b><ul>
       <li>Koi bhi card <b>Skip</b> kar sakte ho — bina wajah bataye.</li>
       <li>🟢 Green = aur · 🟡 Yellow = dheere · 🔴 Safe word = full stop.</li>
-      <li>Dark level se pehle limits pe 2 minute baat kar lo. Baad me cuddle zaroori. ❤️</li>
+      <li>Dark / Ultra level se pehle limits pe 2 minute baat kar lo. Baad me cuddle zaroori. ❤️</li>
     </ul></div>
     <div class="row"><button class="btn p" id="ok">${S.ready ? 'Save' : "Let's play"}</button></div>
     ${S.ready ? '<div class="row"><button class="btn" id="rs">Score reset karo</button></div>' : ''}`;
@@ -71,7 +74,7 @@ function settings() {
     S.names = [0, 1].map(i => document.getElementById('n' + i).value.trim() || 'Player ' + (i + 1));
     S.safe = document.getElementById('sw').value.trim() || 'Red';
   };
-  app.querySelectorAll('input').forEach(i => i.onchange = () => { read(); save(); });
+  app.querySelectorAll('input[type=text]').forEach(i => i.onchange = () => { read(); save(); });
   document.getElementById('ok').onclick = () => { read(); S.ready = true; save(); stack = []; go(home); };
   const rs = document.getElementById('rs');
   if (rs) rs.onclick = () => { S.score = [0, 0]; save(); rs.textContent = 'Reset ho gaya ✓'; };
@@ -85,12 +88,14 @@ const MENU = [
   ['🎲', 'Truth or Dare', 'Sach bolo ya kar ke dikhao', () => { card = null; go(tod, 'Truth or Dare'); }],
   ['🎯', 'Tease Dice', 'Kya + kaha + kitni der', () => go(dice, 'Tease Dice')],
   ['📲', 'Poke', 'Din me partner ko chhedne wale texts & coupons', () => go(poke, 'Poke')],
+  ['📜', 'Kamasutra Deck', 'Nayi positions — classic se advanced tak', () => deck('pos', 'Kamasutra Deck', 'Position')],
+  ['🎬', 'Fantasy Theatre', 'MFM / cuck / share scenes — sirf imagination, narrate karo', () => deck('theatre', 'Fantasy Theatre', 'Sirf fantasy')],
   ['🙈', 'Never Have I Ever', 'Jisne kiya hai wo sip le ya ek kapda utaare', () => deck('never', 'Never Have I Ever', 'Maine kabhi…')],
   ['⚖️', 'Would You Rather', 'Dono jawab do, phir wajah batao', () => deck('wyr', 'Would You Rather', 'Ye ya wo?')],
   ['🌹', 'Fantasy Dates', 'Real life me karne wale date ideas', () => deck('date', 'Fantasy Dates', 'Date idea')],
 ];
 function home() {
-  app.innerHTML = `<h2>${esc(S.names[0])} <span style="color:var(--rose)">❤</span> ${esc(S.names[1])}</h2>
+  app.innerHTML = `<h2>Moshwa <span style="color:var(--rose)">❤️</span></h2>
     <p class="mute">Aaj raat kya khelna hai? Level: ${LEVELS[S.max]} (⚙ se badlo)</p>
     <div class="grid">${MENU.map((m, i) => `<button class="tile" data-i="${i}"><span class="em">${m[0]}</span><b>${m[1]}</b><span class="d">${m[2]}</span></button>`).join('')}</div>`;
   app.querySelectorAll('.tile').forEach(t => t.onclick = MENU[+t.dataset.i][3]);
@@ -112,7 +117,10 @@ function cardView(c, kind, onDone) {
   document.getElementById('skip').onclick = () => next(false);
 }
 const pick = (kind, max, exact) => {
-  const pool = DECKS[kind].filter(c => exact ? c[0] === max : c[0] <= max);
+  exact = exact || S.only;
+  let pool = DECKS[kind].filter(c => c[0] === max);
+  if (!exact || !pool.length) pool = DECKS[kind].filter(c => c[0] <= max);
+  if (!pool.length) pool = DECKS[kind];
   return draw(kind + max + (exact ? 'x' : ''), pool);
 };
 function tod() {
@@ -129,7 +137,7 @@ function tod() {
   });
 }
 function burn() {
-  const lvl = Math.min(S.max, 1 + Math.floor(burnN / 4));
+  const lvl = S.only ? S.max : Math.min(S.max, 1 + Math.floor(burnN / 4));
   if (!card) {
     const k = burnN % 4 === 0 ? 'truth' : 'dare';
     card = { c: pick(k, lvl, true), k: k === 'truth' ? 'Truth' : 'Dare' };
@@ -146,9 +154,12 @@ function deck(kind, title, tag) {
     if (!c) c = pick(kind, S.max);
     app.innerHTML = `${levelChips()}
       <div class="card"><div class="tag">${tag} · ${LEVELS[c[0]]}</div><div class="big">${fill(c[1])}</div></div>
+      ${c[2] ? `<div class="row"><button class="btn g" id="tm">⏱ Timer start (${c[2]}s)</button></div>` : ''}
       <div class="row"><button class="btn p" id="nx">Next →</button></div>`;
     bindChips();
-    document.getElementById('nx').onclick = () => { c = null; show(); };
+    if (c[2]) document.getElementById('tm').onclick = e => startTimer(e.target, c[2]);
+    document.getElementById('nx').onclick = () => { clearInterval(timer); c = null; show(); };
+    app.querySelectorAll('[data-lvl], #only').forEach(b => b.addEventListener(b.id ? 'change' : 'click', () => { c = null; }, true));
   };
   go(view, title);
 }
@@ -252,4 +263,4 @@ function poke() {
 }
 
 /* ---------- boot ---------- */
-if (S.ready) go(home); else go(settings, 'Welcome');
+if (S.ready) go(home); else go(settings, 'Moshwa ❤️');

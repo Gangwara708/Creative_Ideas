@@ -66,3 +66,5 @@ input[type=text]{width:100%;padding:12px;border-radius:12px;border:1px solid var
 .secret.show{filter:none}
 .bar{height:6px;background:var(--card);border-radius:3px;overflow:hidden;margin:10px 0}
 .bar i{display:block;height:100%;background:var(--rose)}
+label.only{display:flex;align-items:center;gap:8px;margin:4px 0 10px;font-size:13.5px}
+label.only input{width:18px;height:18px;accent-color:var(--rose)}
