@@ -11,6 +11,7 @@ safe word, scores and lists stay in each phone's browser.
 
 | Section | What it does |
 | --- | --- |
+| 💞 Romance | Husband-and-wife romantic tasks at every level — lipstick marks, wedding rituals, long kisses |
 | 🎭 Roleplay Time Machine | Random scene from the past, present or future, with roles, a twist and a secret mission each |
 | 💘 Fantasy Match | Each player votes privately; only mutual yes/maybe items are revealed (same phone or by link) |
 | 🔥 Slow Burn · 🎲 Truth or Dare | Timed cards with a score; Slow Burn climbs a heat level every 4 cards |

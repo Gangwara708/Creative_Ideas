@@ -85,6 +85,7 @@ function settings() {
 /* ---------- Home ---------- */
 const MENU = [
   ['🌍', 'Long Distance', 'Door ho? Sync play, sealed links, call dares, countdown', () => go(ldr, 'Long Distance')],
+  ['💞', 'Romance', 'Pati-Patni wale romantic tasks — lipstick, maang, long kisses', () => deck('romance', 'Romance', 'Romance')],
   ['🎭', 'Roleplay Time Machine', 'Raja-Rani se 2080 ke android tak — role, scene, twist', () => go(roleplay, 'Roleplay')],
   ['💘', 'Fantasy Match', 'Alag-alag vote karo, sirf common fantasies khulengi', () => go(matchIntro, 'Fantasy Match')],
   ['🔥', 'Slow Burn', 'Foreplay game — har 4 card pe heat badhti hai', () => { burnN = 0; card = null; go(burn, 'Slow Burn'); }],
@@ -92,7 +93,7 @@ const MENU = [
   ['🎯', 'Tease Dice', 'Kya + kaha + kitni der', () => go(dice, 'Tease Dice')],
   ['📲', 'Poke', 'Din me partner ko chhedne wale texts & coupons', () => go(poke, 'Poke')],
   ['📜', 'Kamasutra Deck', 'Nayi positions — classic se advanced tak', () => deck('pos', 'Kamasutra Deck', 'Position')],
-  ['🎬', 'Fantasy Theatre', 'Kahaniyan narrate karo — sweet se MFM / cuck tak, sirf imagination', () => deck('theatre', 'Fantasy Theatre', 'Sirf fantasy')],
+  ['🎬', 'Fantasy Theatre', 'Kahaniyan narrate karo — sweet se wild tak, sirf imagination', () => deck('theatre', 'Fantasy Theatre', 'Sirf fantasy')],
   ['✍️', 'Apne Cards', 'Khud ke cards banao aur website pe publish karo', () => go(creator, 'Apne Cards')],
   ['🙈', 'Never Have I Ever', 'Jisne kiya hai wo sip le ya ek kapda utaare', () => deck('never', 'Never Have I Ever', 'Maine kabhi…')],
   ['⚖️', 'Would You Rather', 'Dono jawab do, phir wajah batao', () => deck('wyr', 'Would You Rather', 'Ye ya wo?')],
@@ -340,7 +341,7 @@ function ldr() {
   document.getElementById('t9').onclick = () => go(bucket, 'Bucket List');
 }
 
-const SYNC_DECKS = { ldr: '📞 Call Dares', truth: 'Truth', dare: 'Dare', wyr: 'Ye ya Wo', never: 'Never', theatre: 'Theatre' };
+const SYNC_DECKS = { ldr: '📞 Call Dares', romance: '💞 Romance', truth: 'Truth', dare: 'Dare', wyr: 'Ye ya Wo', never: 'Never', theatre: 'Theatre' };
 let sy = { kind: 'ldr', i: 0 };
 function sync() {
   const code = (S.code || '').trim().toLowerCase();

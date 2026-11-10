@@ -1,5 +1,5 @@
 /* Moshwa service worker: network-first, cache sirf offline ke liye. */
-const C = 'moshwa-v1';
+const C = 'moshwa-v2';
 const CORE = ['./', 'index.html', 'style.css', 'data.js', 'extra.js', 'custom.js', 'app.js', 'custom.json', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(C).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));

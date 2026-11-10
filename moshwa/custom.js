@@ -2,7 +2,7 @@
    Ye file app.js se pehle load hoti hai; S, go, esc, toast, seeded… wahi se aate hain. */
 
 /* ---------- Custom cards ---------- */
-const CUSTOM_KINDS = { truth: 'Truth', dare: 'Dare', ldr: 'Call Dare', never: 'Never Have I Ever', wyr: 'Would You Rather',
+const CUSTOM_KINDS = { romance: 'Romance', truth: 'Truth', dare: 'Dare', ldr: 'Call Dare', never: 'Never Have I Ever', wyr: 'Would You Rather',
   date: 'Fantasy Date', pos: 'Kamasutra / Position', theatre: 'Fantasy Theatre', poke: 'Poke message' };
 const BASE = {};
 let remoteCards = [];

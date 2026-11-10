@@ -12,6 +12,7 @@ names, safe word and scores stay in the browser's local storage.
 | 🎯 Tease Dice | Action + place + duration |
 | 📲 Poke | Teasing texts and coupons to send over WhatsApp |
 | 🌍 Long Distance | Sync Play (same room code → same cards on both phones), sealed message links, remote Fantasy Match by link, video-call dares, a daily question, a meet-up countdown, a 7-day tease challenge, link-passed story builder, date-locked time capsules, a shared bucket list, and a Live Room that connects the two phones directly (WebRTC via PeerJS) for synced cards and poke buzzes |
+| 💞 Romance | Husband-and-wife romantic tasks at every level — lipstick marks, wedding rituals, long kisses |
 | 📜 Kamasutra Deck | Positions from easy to advanced, with timers |
 | 🎬 Fantasy Theatre | Imagination-only story prompts to narrate to each other |
 | 🙈 / ⚖️ / 🌹 | Never Have I Ever, Would You Rather, Fantasy Dates |
