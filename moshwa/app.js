@@ -5,7 +5,8 @@ const S = Object.assign({ names: ['King', 'Queen'], safe: 'Red', max: 2, only: f
 const save = () => localStorage.setItem('moshwa', JSON.stringify(S));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const rnd = a => a[Math.floor(Math.random() * a.length)];
-let turn = Math.random() < 0.5 ? 0 : 1, timer = null, stack = [];
+let turn = Math.random() < 0.5 ? 0 : 1, timer = null, stack = [], onLeave = null;
+const leave = () => { clearInterval(timer); if (onLeave) { const f = onLeave; onLeave = null; f(); } };
 
 /* shuffle-bag: jab tak deck khatam na ho, card repeat nahi hota */
 const bags = {};
@@ -16,7 +17,7 @@ function draw(key, pool) {
 const fill = (t, p = turn) => esc(t).replace(/\{p\}/g, `<b>${esc(S.names[p])}</b>`).replace(/\{o\}/g, `<b>${esc(S.names[1 - p])}</b>`);
 
 function go(view, title) {
-  clearInterval(timer);
+  leave();
   stack.push([view, title]);
   show();
 }
@@ -29,7 +30,7 @@ function show() {
   view();
   window.scrollTo(0, 0);
 }
-document.getElementById('back').onclick = () => { if (stack.length > 1) { clearInterval(timer); stack.pop(); show(); } };
+document.getElementById('back').onclick = () => { if (stack.length > 1) { leave(); stack.pop(); show(); } };
 document.getElementById('gear').onclick = () => go(settings, 'Settings');
 
 const levelChips = () => `<div class="chips">${[1, 2, 3, 4, 5].map(l =>
@@ -314,10 +315,15 @@ function ldr() {
     <div class="card" style="min-height:0"><div class="tag">Aaj ka sawaal · dono phones pe same</div><div class="big">${esc(q)}</div></div>
     <div class="row"><button class="btn" id="qa">Apna jawab WhatsApp karo</button></div>
     <div class="grid">
+      <button class="tile" id="t5"><span class="em">🟢</span><b>Live Room</b><span class="d">Phones jud jaate hain — Next aur Poke buzz live</span></button>
       <button class="tile" id="t1"><span class="em">📞</span><b>Sync Play</b><span class="d">Call pe same code daalo — dono ko same card dikhega</span></button>
       <button class="tile" id="t2"><span class="em">💌</span><b>Sealed Message</b><span class="d">Dare ya secret ko link me band karke bhejo</span></button>
       <button class="tile" id="t3"><span class="em">💘</span><b>Remote Fantasy Match</b><span class="d">Alag phones pe vote, link se match</span></button>
       <button class="tile" id="t4"><span class="em">📲</span><b>Poke</b><span class="d">Din bhar ke teasing texts</span></button>
+      <button class="tile" id="t6"><span class="em">🔥</span><b>7-Din Tease</b><span class="d">Milne se pehle har din ek badhta task</span></button>
+      <button class="tile" id="t7"><span class="em">📖</span><b>Story Builder</b><span class="d">Ek line tum, ek line partner</span></button>
+      <button class="tile" id="t8"><span class="em">⏳</span><b>Time Capsule</b><span class="d">Letter jo tay date pe hi khule</span></button>
+      <button class="tile" id="t9"><span class="em">📝</span><b>Bucket List</b><span class="d">Milne pe karne wali cheezein</span></button>
     </div>`;
   document.getElementById('meet').onchange = e => { S.meet = e.target.value; save(); show(); };
   document.getElementById('qa').onclick = () => wa('❓ Aaj ka Moshwa sawaal: ' + q + '\n\nMera jawab: ');
@@ -325,6 +331,11 @@ function ldr() {
   document.getElementById('t2').onclick = () => { sealText = ''; go(seal, 'Sealed Message'); };
   document.getElementById('t3').onclick = () => go(matchIntro, 'Fantasy Match');
   document.getElementById('t4').onclick = () => go(poke, 'Poke');
+  document.getElementById('t5').onclick = () => go(live, 'Live Room');
+  document.getElementById('t6').onclick = () => go(tease, '7-Din Tease');
+  document.getElementById('t7').onclick = () => go(story, 'Story Builder');
+  document.getElementById('t8').onclick = () => go(capsule, 'Time Capsule');
+  document.getElementById('t9').onclick = () => go(bucket, 'Bucket List');
 }
 
 const SYNC_DECKS = { ldr: '📞 Call Dares', truth: 'Truth', dare: 'Dare', wyr: 'Ye ya Wo', never: 'Never', theatre: 'Theatre' };
@@ -385,13 +396,29 @@ function sealed(msg) {
 /* ---------- boot ---------- */
 if (S.ready) go(home); else go(settings, 'Moshwa ❤️');
 function route() {
-  const m = location.hash.match(/^#([sm])=(.+)$/), o = m && unb64(m[2]);
+  const m = location.hash.match(/^#([smbcy])=(.+)$/), o = m && unb64(m[2]);
   if (!o) return;
   history.replaceState(null, '', location.href.split('#')[0]);
   if (m[1] === 's' && typeof o.t === 'string') go(sealed({ t: o.t.slice(0, 600), f: String(o.f || '').slice(0, 20) }), 'Sealed Message');
   if (m[1] === 'm' && typeof o.a === 'string' && o.a.length === FANTASIES.length && /^[012]+$/.test(o.a)) {
     fm = { who: 1, i: 0, a: [o.a.split('').map(Number), []], remote: true };
     go(matchVote, 'Fantasy Match');
+  }
+  const str = (v, n) => typeof v === 'string' && v.trim() ? v.slice(0, n) : null;
+  if (m[1] === 'b' && Array.isArray(o.l)) {
+    const B = S.bucket = S.bucket || [];
+    o.l.slice(0, 100).forEach(t => { t = str(t, 120); if (t && !B.some(x => x.t === t)) B.push({ t, d: 0 }); });
+    save(); go(bucket, 'Bucket List');
+  }
+  if (m[1] === 'c' && str(o.t, 800) && /^\d{4}-\d{2}-\d{2}$/.test(o.d)) {
+    const C = S.caps = S.caps || [], c = { t: str(o.t, 800), f: str(o.f, 20) || 'Partner', d: o.d };
+    if (!C.some(x => x.t === c.t && x.d === c.d)) C.push(c);
+    save(); go(capsule, 'Time Capsule');
+  }
+  if (m[1] === 'y' && Array.isArray(o.l)) {
+    const l = o.l.slice(0, 40).filter(x => Array.isArray(x) && str(x[0], 20) && str(x[1], 300)).map(x => [str(x[0], 20), str(x[1], 300)]);
+    if (l.length) { S.story = { l }; save(); }
+    go(story, 'Story Builder');
   }
 }
 route();
