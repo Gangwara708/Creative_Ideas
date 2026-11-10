@@ -19,6 +19,12 @@ names, safe word and scores stay in the browser's local storage.
 Five heat levels (Flirty → Spicy → Wild → Dark → Ultra) can be picked on any game screen; tick "Sirf isi level ke cards" to jump straight to one level. Every card
 can be skipped, and the safe word is shown on every screen.
 
-**Add your own cards:** edit the lists in `data.js` — one line per card.
+**Add your own cards:** use ✍️ Apne Cards in the app. Cards can stay on one phone, or be
+published: with a fine-grained GitHub token (Contents: read/write on this repo only) the app
+commits them to `custom.json` with your commit message, and every phone picks them up on next load.
+You can also edit the lists in `data.js` directly.
+
+**Privacy:** optional 4-digit PIN lock (Settings). **Install:** the site is a PWA — add it to the
+home screen and it works offline after the first load.
 
 **Run:** open `index.html`, or serve the repo root and visit `/moshwa/`.

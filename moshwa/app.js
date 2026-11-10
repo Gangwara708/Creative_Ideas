@@ -68,9 +68,10 @@ function settings() {
       <li>🟢 Green = aur · 🟡 Yellow = dheere · 🔴 Safe word = full stop.</li>
       <li>Dark / Ultra level se pehle limits pe 2 minute baat kar lo. Baad me cuddle zaroori. ❤️</li>
     </ul></div>
+    ${extraSettings()}
     <div class="row"><button class="btn p" id="ok">${S.ready ? 'Save' : "Let's play"}</button></div>
     ${S.ready ? '<div class="row"><button class="btn" id="rs">Score reset karo</button></div>' : ''}`;
-  bindChips();
+  bindChips(); bindExtraSettings();
   const read = () => {
     S.names = [0, 1].map(i => document.getElementById('n' + i).value.trim() || 'Player ' + (i + 1));
     S.safe = document.getElementById('sw').value.trim() || 'Red';
@@ -92,6 +93,7 @@ const MENU = [
   ['📲', 'Poke', 'Din me partner ko chhedne wale texts & coupons', () => go(poke, 'Poke')],
   ['📜', 'Kamasutra Deck', 'Nayi positions — classic se advanced tak', () => deck('pos', 'Kamasutra Deck', 'Position')],
   ['🎬', 'Fantasy Theatre', 'Kahaniyan narrate karo — sweet se MFM / cuck tak, sirf imagination', () => deck('theatre', 'Fantasy Theatre', 'Sirf fantasy')],
+  ['✍️', 'Apne Cards', 'Khud ke cards banao aur website pe publish karo', () => go(creator, 'Apne Cards')],
   ['🙈', 'Never Have I Ever', 'Jisne kiya hai wo sip le ya ek kapda utaare', () => deck('never', 'Never Have I Ever', 'Maine kabhi…')],
   ['⚖️', 'Would You Rather', 'Dono jawab do, phir wajah batao', () => deck('wyr', 'Would You Rather', 'Ye ya wo?')],
   ['🌹', 'Fantasy Dates', 'Real life me karne wale date ideas', () => deck('date', 'Fantasy Dates', 'Date idea')],
@@ -394,6 +396,7 @@ function sealed(msg) {
 }
 
 /* ---------- boot ---------- */
+applyCustom(); loadRemote(); lock();
 if (S.ready) go(home); else go(settings, 'Moshwa ❤️');
 function route() {
   const m = location.hash.match(/^#([smbcy])=(.+)$/), o = m && unb64(m[2]);
