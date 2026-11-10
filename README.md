@@ -1,31 +1,46 @@
-# 🎮 Creative Ideas — Original Browser Games
+# 🌙 Moshwa ❤️
 
-A collection of **original, fully free 3D browser games** built with
-[Three.js](https://threejs.org/). No installs, no accounts, no paywalls —
-every feature in every game is unlocked, because these are built from
-scratch as their own games.
+A private, phone-first game for two adults (18+): roleplay, fantasies, dares and
+long-distance play in one installable web app. No accounts and no server — names,
+safe word, scores and lists stay in each phone's browser.
 
-All 3D models are generated procedurally in code; there are no third-party
-game assets anywhere in this repo.
+**Play:** open [`moshwa/`](moshwa/) — on GitHub Pages that is
+`https://<user>.github.io/Creative_Ideas/moshwa/`.
 
-| Game | Genre | Play |
-| --- | --- | --- |
-| 🏏 [**Super Over Cricket 3D**](cricket-3d/) | Cricket — bat an innings, then defend it against an AI chase | `cricket-3d/index.html` |
-| 🌙 [**Moshwa**](moshwa/) | Couples' party game (18+) — roleplay generator, truth or dare, fantasy match, dice, pokes | `moshwa/index.html` |
-| 🏎️ [**Highway Rush 3D**](highway-rush-3d/) | Endless arcade driving — traffic, near misses, nitro, high scores | `highway-rush-3d/index.html` |
+## What's inside
 
-## ▶️ Quick start
+| Section | What it does |
+| --- | --- |
+| 🎭 Roleplay Time Machine | Random scene from the past, present or future, with roles, a twist and a secret mission each |
+| 💘 Fantasy Match | Each player votes privately; only mutual yes/maybe items are revealed (same phone or by link) |
+| 🔥 Slow Burn · 🎲 Truth or Dare | Timed cards with a score; Slow Burn climbs a heat level every 4 cards |
+| 🎯 Tease Dice | Action + place + duration |
+| 📜 Kamasutra Deck | Positions from easy to advanced, with timers |
+| 🎬 Fantasy Theatre | Imagination-only story prompts to narrate to each other |
+| 🙈 ⚖️ 🌹 | Never Have I Ever, Would You Rather, Fantasy Dates |
+| 📲 Poke | Teasing texts and coupons to send over WhatsApp |
+| 🌍 Long Distance | Live Room (phones connect directly for synced cards and poke buzzes), Sync Play, sealed message links, video-call dares, daily question, countdown, 7-day tease challenge, story builder, time capsules, bucket list |
+| ✍️ Apne Cards | Write your own cards and publish them to this repo from inside the app |
 
-Serve the repo root and pick a game:
+Five heat levels — Flirty, Spicy, Wild, Dark, Ultra — can be chosen on any game
+screen. Every card can be skipped and the safe word is shown on every screen.
 
-```bash
-python3 -m http.server 8000
-# then open:
-#   http://localhost:8000/cricket-3d/
-#   http://localhost:8000/highway-rush-3d/
-```
+## Deploy
 
-Or just double-click either game's `index.html` (internet needed the first
-time so the Three.js library can load from a CDN).
+1. Repo **Settings → Pages → Deploy from a branch**, pick the branch that holds
+   this code and folder `/ (root)`, then Save.
+2. Open `https://<user>.github.io/Creative_Ideas/moshwa/` on both phones.
+3. Optional: add it to the home screen (it is a PWA and works offline after the
+   first load) and set a PIN in ⚙ Settings.
 
-Each game has its own README with controls, rules, and tuning tips.
+A Pages site is public to anyone who has the link. Search engines are told not
+to index it, and the PIN only locks the screen on a phone.
+
+## Publishing cards from the app
+
+✍️ Apne Cards can commit new cards to [`moshwa/custom.json`](moshwa/custom.json)
+with your own commit message. It needs a fine-grained GitHub token limited to
+this repository with **Contents: Read and write**; the token is stored only in
+that phone's browser. Built-in cards live in [`moshwa/data.js`](moshwa/data.js).
+
+More detail: [`moshwa/README.md`](moshwa/README.md).
