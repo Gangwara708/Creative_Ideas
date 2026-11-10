@@ -82,6 +82,7 @@ function settings() {
 
 /* ---------- Home ---------- */
 const MENU = [
+  ['🌍', 'Long Distance', 'Door ho? Sync play, sealed links, call dares, countdown', () => go(ldr, 'Long Distance')],
   ['🎭', 'Roleplay Time Machine', 'Raja-Rani se 2080 ke android tak — role, scene, twist', () => go(roleplay, 'Roleplay')],
   ['💘', 'Fantasy Match', 'Alag-alag vote karo, sirf common fantasies khulengi', () => go(matchIntro, 'Fantasy Match')],
   ['🔥', 'Slow Burn', 'Foreplay game — har 4 card pe heat badhti hai', () => { burnN = 0; card = null; go(burn, 'Slow Burn'); }],
@@ -116,12 +117,14 @@ function cardView(c, kind, onDone) {
   document.getElementById('done').onclick = () => next(true);
   document.getElementById('skip').onclick = () => next(false);
 }
-const pick = (kind, max, exact) => {
-  exact = exact || S.only;
+const poolFor = (kind, max, exact) => {
   let pool = DECKS[kind].filter(c => c[0] === max);
   if (!exact || !pool.length) pool = DECKS[kind].filter(c => c[0] <= max);
-  if (!pool.length) pool = DECKS[kind];
-  return draw(kind + max + (exact ? 'x' : ''), pool);
+  return pool.length ? pool : DECKS[kind];
+};
+const pick = (kind, max, exact) => {
+  exact = exact || S.only;
+  return draw(kind + max + (exact ? 'x' : ''), poolFor(kind, max, exact));
 };
 function tod() {
   if (card) return cardView(card.c, card.k, () => { card = null; show(); });
@@ -207,11 +210,22 @@ let fm = null;
 function matchIntro() {
   app.innerHTML = `<div class="card"><div class="big">Dono baari-baari, <b>akele me</b>, har fantasy pe vote karo.</div>
     <p class="mute">Sirf wahi dikhengi jinpe dono ne Haan / Shayad bola. Kisi ek ka bhi "Nahi" hamesha secret rehta hai — toh bina dare sach bolo.</p></div>
-    <div class="row"><button class="btn p" id="st">${esc(S.names[0])} se shuru</button></div>`;
+    <div class="row"><button class="btn p" id="st">${esc(S.names[0])} se shuru (ek hi phone)</button></div>
+    <div class="row"><button class="btn g" id="rm">🌍 Long distance — link se khelo</button></div>
+    <p class="mute">Link wale mode me tum yaha vote karke link bhejte ho; partner apne phone pe vote karta hai aur matches wahi khulte hain.</p>`;
   document.getElementById('st').onclick = () => { fm = { who: 0, i: 0, a: [[], []] }; stack.pop(); go(matchVote, 'Fantasy Match'); };
+  document.getElementById('rm').onclick = () => { fm = { who: 0, i: 0, a: [[], []], remote: true }; stack.pop(); go(matchVote, 'Fantasy Match'); };
 }
 function matchVote() {
   if (fm.i >= FANTASIES.length) {
+    if (fm.who === 0 && fm.remote) {
+      const url = link('m', { a: fm.a[0].join('') });
+      app.innerHTML = `<div class="card"><div class="big">Tumhare votes seal ho gaye 🔒</div><p class="mute">Ye link partner ko bhejo. Wo vote karenge toh matches unke phone pe khulenge — phir wo result tumhe bhej sakte hain.</p></div>
+        <div class="row"><button class="btn p" id="wa">WhatsApp pe link bhejo</button></div><div class="row"><button class="btn" id="cp">Link copy karo</button></div>`;
+      document.getElementById('wa').onclick = () => wa('💘 Moshwa Fantasy Match — maine vote kar diya, ab tumhari baari: ' + url);
+      document.getElementById('cp').onclick = e => copy(url, e.target);
+      return;
+    }
     if (fm.who === 0) {
       app.innerHTML = `<div class="card"><div class="big">Ho gaya ✓<br>Ab phone <b>${esc(S.names[1])}</b> ko do.</div><p class="mute">Jawab chhup gaye hain.</p></div>
         <div class="row"><button class="btn p" id="st">Mai ${esc(S.names[1])} hu — start</button></div>`;
@@ -220,7 +234,7 @@ function matchVote() {
     }
     return matchResult();
   }
-  app.innerHTML = `<p class="turn"><b>${esc(S.names[fm.who])}</b> — sirf tum dekho 👀</p>
+  app.innerHTML = `<p class="turn"><b>${fm.remote ? 'Tumhare votes' : esc(S.names[fm.who])}</b> — sirf tum dekho 👀</p>
     <div class="bar"><i style="width:${fm.i / FANTASIES.length * 100}%"></i></div>
     <div class="card"><div class="tag">${fm.i + 1} / ${FANTASIES.length}</div><div class="big">${esc(FANTASIES[fm.i])}</div></div>
     <div class="row"><button class="btn" data-v="0">Nahi</button><button class="btn g" data-v="1">Shayad</button><button class="btn p" data-v="2">Haan 🔥</button></div>`;
@@ -237,7 +251,9 @@ function matchResult() {
     ${hot.length ? `<ul class="list">${hot.map(f => `<li class="hot">🔥 ${esc(f)}</li>`).join('')}</ul>` : ''}
     ${maybe.length ? `<ul class="list">${maybe.map(f => `<li>🤔 ${esc(f)}</li>`).join('')}</ul>` : ''}
     ${!hot.length && !maybe.length ? '<div class="box">Is baar koi match nahi — koi baat nahi. Mood badalta rehta hai, phir kabhi try karo.</div>' : ''}
+    ${fm.remote ? '<div class="row"><button class="btn p" id="sh">Result partner ko WhatsApp karo</button></div>' : ''}
     <div class="row"><button class="btn" id="ag">Dobara khelo</button></div>`;
+  if (fm.remote) document.getElementById('sh').onclick = () => wa('💘 Humare Moshwa matches:\n' + hot.map(f => '🔥 ' + f).concat(maybe.map(f => '🤔 ' + f)).join('\n'));
   document.getElementById('ag').onclick = () => { stack.pop(); go(matchIntro, 'Fantasy Match'); };
 }
 
@@ -254,7 +270,7 @@ function poke() {
   app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { pkFrom = +b.dataset.f; show(); });
   app.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { pkCat = b.dataset.c; pkMsg = null; show(); });
   document.getElementById('nx').onclick = () => { pkMsg = null; show(); };
-  document.getElementById('wa').onclick = () => window.open('https://wa.me/?text=' + encodeURIComponent(pkMsg), '_blank', 'noopener');
+  document.getElementById('wa').onclick = () => wa(pkMsg);
   document.getElementById('cp').onclick = e => {
     const done = () => { e.target.textContent = 'Copied ✓'; };
     if (navigator.clipboard) navigator.clipboard.writeText(pkMsg).then(done, () => { e.target.textContent = 'Copy nahi hua — text select karke copy karo'; });
@@ -262,5 +278,121 @@ function poke() {
   };
 }
 
+/* ---------- Long Distance ---------- */
+const b64 = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64 = s => { try { return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/'))))); } catch (e) { return null; } };
+const link = (k, o) => location.href.split('#')[0] + '#' + k + '=' + b64(o);
+const wa = text => window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
+function copy(text, btn) {
+  const no = () => { btn.textContent = 'Copy nahi hua — share button use karo'; };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => { btn.textContent = 'Copied ✓'; }, no); else no();
+}
+/* same seed => same order on both phones, bina server ke */
+function seeded(str) {
+  let h = 1779033703;
+  for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+  return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
+}
+function seededShuffle(arr, seed) {
+  const r = seeded(seed), a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+
+function ldr() {
+  let cd = 'Agli mulaqat ki date daalo 👇';
+  if (S.meet) {
+    const days = Math.ceil((new Date(S.meet + 'T00:00') - new Date()) / 864e5);
+    cd = days > 0 ? `<b style="font-size:34px;color:var(--rose)">${days}</b> din baaki — phir saath ❤️` : 'Aaj ka din aa gaya! Phone rakho aur gale lago. ❤️';
+  }
+  const q = seededShuffle(DECKS.truth.filter(c => c[0] <= Math.min(S.max, 3)), 'q' + today())[0][1]
+    .replace(/\{o\}/g, 'partner').replace(/\{p\}/g, 'tum');
+  app.innerHTML = `
+    <div class="card" style="min-height:0"><div class="tag">Countdown</div><div class="big">${cd}</div>
+      <input type="date" id="meet" value="${esc(S.meet || '')}" style="margin-top:12px"></div>
+    <div class="card" style="min-height:0"><div class="tag">Aaj ka sawaal · dono phones pe same</div><div class="big">${esc(q)}</div></div>
+    <div class="row"><button class="btn" id="qa">Apna jawab WhatsApp karo</button></div>
+    <div class="grid">
+      <button class="tile" id="t1"><span class="em">📞</span><b>Sync Play</b><span class="d">Call pe same code daalo — dono ko same card dikhega</span></button>
+      <button class="tile" id="t2"><span class="em">💌</span><b>Sealed Message</b><span class="d">Dare ya secret ko link me band karke bhejo</span></button>
+      <button class="tile" id="t3"><span class="em">💘</span><b>Remote Fantasy Match</b><span class="d">Alag phones pe vote, link se match</span></button>
+      <button class="tile" id="t4"><span class="em">📲</span><b>Poke</b><span class="d">Din bhar ke teasing texts</span></button>
+    </div>`;
+  document.getElementById('meet').onchange = e => { S.meet = e.target.value; save(); show(); };
+  document.getElementById('qa').onclick = () => wa('❓ Aaj ka Moshwa sawaal: ' + q + '\n\nMera jawab: ');
+  document.getElementById('t1').onclick = () => go(sync, 'Sync Play');
+  document.getElementById('t2').onclick = () => { sealText = ''; go(seal, 'Sealed Message'); };
+  document.getElementById('t3').onclick = () => go(matchIntro, 'Fantasy Match');
+  document.getElementById('t4').onclick = () => go(poke, 'Poke');
+}
+
+const SYNC_DECKS = { ldr: '📞 Call Dares', truth: 'Truth', dare: 'Dare', wyr: 'Ye ya Wo', never: 'Never', theatre: 'Theatre' };
+let sy = { kind: 'ldr', i: 0 };
+function sync() {
+  const code = (S.code || '').trim().toLowerCase();
+  const pool = seededShuffle(poolFor(sy.kind, S.max, S.only), [code, sy.kind, S.max, S.only].join('|'));
+  const c = pool[sy.i % pool.length];
+  app.innerHTML = `
+    <label>Room code — dono same likho (jaise: moshwa-saturday)</label>
+    <input type="text" id="code" maxlength="30" value="${esc(S.code || '')}" placeholder="koi bhi secret word">
+    <div class="chips">${Object.keys(SYNC_DECKS).map(k => `<button class="chip ${sy.kind === k ? 'on' : ''}" data-sk="${k}">${SYNC_DECKS[k]}</button>`).join('')}</div>
+    ${levelChips()}
+    ${code ? `<p class="turn">Card <b>#${sy.i + 1}</b> — partner se confirm karo number same hai</p>
+      <div class="card"><div class="tag">${SYNC_DECKS[sy.kind]} · ${LEVELS[c[0]]}</div><div class="big">${fill(c[1], sy.i % 2)}</div></div>
+      ${c[2] ? `<div class="row"><button class="btn g" id="tm">⏱ Timer start (${c[2]}s)</button></div>` : ''}
+      <div class="row"><button class="btn" id="pv" ${sy.i ? '' : 'disabled'}>← Pichla</button><button class="btn p" id="nx">Next →</button></div>`
+      : '<div class="box">Code daalo toh cards khulenge. Call pe "3-2-1 Next" bolke saath me aage badho.</div>'}
+    <p class="mute">Same card ke liye dono phones pe code, deck aur level same hone chahiye — aur ⚙ Settings me Player 1 / Player 2 ka order bhi.</p>`;
+  bindChips();
+  document.getElementById('code').onchange = e => { S.code = e.target.value; save(); sy.i = 0; show(); };
+  app.querySelectorAll('[data-sk]').forEach(b => b.onclick = () => { sy.kind = b.dataset.sk; sy.i = 0; show(); });
+  app.querySelectorAll('[data-lvl], #only').forEach(b => b.addEventListener(b.id ? 'change' : 'click', () => { sy.i = 0; }, true));
+  if (!code) return;
+  if (c[2]) document.getElementById('tm').onclick = e => startTimer(e.target, c[2]);
+  document.getElementById('nx').onclick = () => { clearInterval(timer); sy.i++; show(); };
+  document.getElementById('pv').onclick = () => { clearInterval(timer); sy.i--; show(); };
+}
+
+let sealText = '';
+function seal() {
+  const from = S.names[pkFrom], plain = t => t.replace(/\{p\}/g, 'Tum').replace(/\{o\}/g, from);
+  app.innerHTML = `<p class="mute">Jo likhoge wo ek link me band ho jaayega. Partner link kholega, tap karega, tab dikhega. Bhejne wala:</p>
+    <div class="chips">${[0, 1].map(i => `<button class="chip ${pkFrom === i ? 'on' : ''}" data-f="${i}">${esc(S.names[i])}</button>`).join('')}</div>
+    <textarea id="tx" rows="5" maxlength="600" placeholder="Apna dare, secret, order ya fantasy likho…">${esc(sealText)}</textarea>
+    <div class="chips"><button class="chip" data-r="dare">🎲 Random dare</button><button class="chip" data-r="truth">🎲 Random truth</button><button class="chip" data-r="ldr">🎲 Call dare</button><button class="chip" data-r="theatre">🎲 Fantasy scene</button></div>
+    <p class="mute">Random cards ka level: ${LEVELS[S.max]} (⚙ se badlo)</p>
+    <div class="row"><button class="btn p" id="wa">💌 Seal karke WhatsApp karo</button></div><div class="row"><button class="btn" id="cp">Link copy karo</button></div>`;
+  const tx = document.getElementById('tx');
+  tx.oninput = () => { sealText = tx.value; };
+  app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { pkFrom = +b.dataset.f; show(); });
+  app.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { sealText = tx.value = plain(pick(b.dataset.r, S.max)[1]); });
+  const url = () => sealText.trim() ? link('s', { t: sealText.trim(), f: from }) : (tx.focus(), null);
+  document.getElementById('wa').onclick = () => { const u = url(); if (u) wa('💌 Tumhare liye ek sealed Moshwa message hai. Akele me kholna: ' + u); };
+  document.getElementById('cp').onclick = e => { const u = url(); if (u) copy(u, e.target); };
+}
+function sealed(msg) {
+  return () => {
+    app.innerHTML = `<p class="turn"><b>${esc(msg.f || 'Partner')}</b> ne tumhare liye kuch bheja hai 💌</p>
+      <div class="card"><div class="tag">Akele ho? Tab tap karo</div><div class="big secret">${esc(msg.t)}</div></div>
+      <div class="row"><button class="btn" id="rp">Jawab WhatsApp karo</button><button class="btn p" id="bk">Badla lo 😈</button></div>`;
+    app.querySelector('.secret').onclick = e => e.currentTarget.classList.add('show');
+    document.getElementById('rp').onclick = () => wa('💌 Tumhara sealed message khol liya… ');
+    document.getElementById('bk').onclick = () => { sealText = ''; go(seal, 'Sealed Message'); };
+  };
+}
+
 /* ---------- boot ---------- */
 if (S.ready) go(home); else go(settings, 'Moshwa ❤️');
+function route() {
+  const m = location.hash.match(/^#([sm])=(.+)$/), o = m && unb64(m[2]);
+  if (!o) return;
+  history.replaceState(null, '', location.href.split('#')[0]);
+  if (m[1] === 's' && typeof o.t === 'string') go(sealed({ t: o.t.slice(0, 600), f: String(o.f || '').slice(0, 20) }), 'Sealed Message');
+  if (m[1] === 'm' && typeof o.a === 'string' && o.a.length === FANTASIES.length && /^[012]+$/.test(o.a)) {
+    fm = { who: 1, i: 0, a: [o.a.split('').map(Number), []], remote: true };
+    go(matchVote, 'Fantasy Match');
+  }
+}
+route();
+window.addEventListener('hashchange', route);

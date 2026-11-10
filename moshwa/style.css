@@ -68,3 +68,5 @@ input[type=text]{width:100%;padding:12px;border-radius:12px;border:1px solid var
 .bar i{display:block;height:100%;background:var(--rose)}
 label.only{display:flex;align-items:center;gap:8px;margin:4px 0 10px;font-size:13.5px}
 label.only input{width:18px;height:18px;accent-color:var(--rose)}
+textarea,input[type=date]{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;color-scheme:dark}
+textarea{resize:vertical}
