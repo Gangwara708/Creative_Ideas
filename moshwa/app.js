@@ -25,7 +25,7 @@ function show() {
   const [view, title] = stack[stack.length - 1];
   document.getElementById('title').textContent = title || 'Moshwa ❤️';
   document.getElementById('back').style.visibility = stack.length > 1 ? 'visible' : 'hidden';
-  document.getElementById('safe').innerHTML = S.ready ? `Safe word: <b>${esc(S.safe)}</b> — bolte hi sab ruk jaata hai.` : '';
+  document.getElementById('safe').innerHTML = S.ready ? `Safe word: <b>${esc(S.safe)}</b> — bolte hi sab ruk jaata hai.<span id="cl">${cloudBadgeText()}</span>` : '';
   app.innerHTML = '';
   view();
   window.scrollTo(0, 0);
@@ -76,15 +76,16 @@ function settings() {
     S.names = [0, 1].map(i => document.getElementById('n' + i).value.trim() || 'Player ' + (i + 1));
     S.safe = document.getElementById('sw').value.trim() || 'Red';
   };
-  app.querySelectorAll('input[type=text]').forEach(i => i.onchange = () => { read(); save(); });
-  document.getElementById('ok').onclick = () => { read(); S.ready = true; save(); stack = []; go(home); };
+  const pushNames = () => { const n = rec('names'); if (cloudOn() && (!n || JSON.stringify(n.v) !== JSON.stringify(S.names))) put('names', { v: S.names }); };
+  app.querySelectorAll('input[type=text]').forEach(i => i.onchange = () => { read(); save(); pushNames(); });
+  document.getElementById('ok').onclick = () => { read(); S.ready = true; save(); pushNames(); stack = []; go(home); };
   const rs = document.getElementById('rs');
   if (rs) rs.onclick = () => { S.score = [0, 0]; save(); rs.textContent = 'Reset ho gaya ✓'; };
 }
 
 /* ---------- Home ---------- */
 const MENU = [
-  ['🌍', 'Long Distance', 'Door ho? Sync play, sealed links, call dares, countdown', () => go(ldr, 'Long Distance')],
+  ['🌍', 'Long Distance', 'Door ho? Cloud sync, inbox, live room, call dares, countdown', () => go(ldr, 'Long Distance')],
   ['💞', 'Romance', 'Pati-Patni wale romantic tasks — lipstick, maang, long kisses', () => deck('romance', 'Romance', 'Romance')],
   ['🎭', 'Roleplay Time Machine', 'Raja-Rani se 2080 ke android tak — role, scene, twist', () => go(roleplay, 'Roleplay')],
   ['💘', 'Fantasy Match', 'Alag-alag vote karo, sirf common fantasies khulengi', () => go(matchIntro, 'Fantasy Match')],
@@ -102,8 +103,10 @@ const MENU = [
 function home() {
   app.innerHTML = `<h2>Moshwa <span style="color:var(--rose)">❤️</span></h2>
     <p class="mute">Aaj raat kya khelna hai? Level: ${LEVELS[S.max]} (⚙ se badlo)</p>
+    ${unread() ? `<div class="row"><button class="btn p" id="inb">💌 ${unread()} naya message — Inbox kholo</button></div>` : ''}
     <div class="grid">${MENU.map((m, i) => `<button class="tile" data-i="${i}"><span class="em">${m[0]}</span><b>${m[1]}</b><span class="d">${m[2]}</span></button>`).join('')}</div>`;
   app.querySelectorAll('.tile').forEach(t => t.onclick = MENU[+t.dataset.i][3]);
+  const inb = document.getElementById('inb'); if (inb) inb.onclick = () => go(inbox, 'Inbox');
 }
 
 /* ---------- Truth or Dare / Slow Burn ---------- */
@@ -121,10 +124,17 @@ function cardView(c, kind, onDone) {
   document.getElementById('done').onclick = () => next(true);
   document.getElementById('skip').onclick = () => next(false);
 }
+/* Sync Play / Live Room ke liye roleplay aur dice ko bhi cards ki tarah banao */
+const VDECKS = {
+  rp: () => SCENES.map(s => [1, `🎭 ${s[1]} — {p}: ${s[2]} · {o}: ${s[3]}. ${s[4]}`]),
+  dice: () => { const r = seeded('moshwa-dice'), one = a => a[Math.floor(r() * a.length)];
+    return Array.from({ length: 80 }, () => [1, `🎯 {p} karega/karegi → {o} pe: ${one(DICE.Action)} · ${one(DICE.Jagah)} · ${one(DICE.Kitna)}`]); },
+};
 const poolFor = (kind, max, exact) => {
-  let pool = DECKS[kind].filter(c => c[0] === max);
-  if (!exact || !pool.length) pool = DECKS[kind].filter(c => c[0] <= max);
-  return pool.length ? pool : DECKS[kind];
+  const D = VDECKS[kind] ? VDECKS[kind]() : DECKS[kind];
+  let pool = D.filter(c => c[0] === max);
+  if (!exact || !pool.length) pool = D.filter(c => c[0] <= max);
+  return pool.length ? pool : D;
 };
 const pick = (kind, max, exact) => {
   exact = exact || S.only;
@@ -215,10 +225,12 @@ function matchIntro() {
   app.innerHTML = `<div class="card"><div class="big">Dono baari-baari, <b>akele me</b>, har fantasy pe vote karo.</div>
     <p class="mute">Sirf wahi dikhengi jinpe dono ne Haan / Shayad bola. Kisi ek ka bhi "Nahi" hamesha secret rehta hai — toh bina dare sach bolo.</p></div>
     <div class="row"><button class="btn p" id="st">${esc(S.names[0])} se shuru (ek hi phone)</button></div>
-    <div class="row"><button class="btn g" id="rm">🌍 Long distance — link se khelo</button></div>
-    <p class="mute">Link wale mode me tum yaha vote karke link bhejte ho; partner apne phone pe vote karta hai aur matches wahi khulte hain.</p>`;
+    ${cloudOn() ? '<div class="row"><button class="btn g" id="lv">☁️ Live — dono apne-apne phone pe</button></div>'
+      : `<div class="row"><button class="btn g" id="rm">🌍 Long distance — link se khelo</button></div>
+    <p class="mute">Link wale mode me tum yaha vote karke link bhejte ho; partner apne phone pe vote karta hai. Bina link ke khelna ho toh Long Distance me ☁️ Moshwa Cloud on karo.</p>`}`;
+  const lv = document.getElementById('lv'); if (lv) lv.onclick = () => { stack.pop(); go(matchLive, 'Fantasy Match'); };
   document.getElementById('st').onclick = () => { fm = { who: 0, i: 0, a: [[], []] }; stack.pop(); go(matchVote, 'Fantasy Match'); };
-  document.getElementById('rm').onclick = () => { fm = { who: 0, i: 0, a: [[], []], remote: true }; stack.pop(); go(matchVote, 'Fantasy Match'); };
+  const rm = document.getElementById('rm'); if (rm) rm.onclick = () => { fm = { who: 0, i: 0, a: [[], []], remote: true }; stack.pop(); go(matchVote, 'Fantasy Match'); };
 }
 function matchVote() {
   if (fm.i >= FANTASIES.length) {
@@ -238,11 +250,15 @@ function matchVote() {
     }
     return matchResult();
   }
-  app.innerHTML = `<p class="turn"><b>${fm.remote ? 'Tumhare votes' : esc(S.names[fm.who])}</b> — sirf tum dekho 👀</p>
+  app.innerHTML = `<p class="turn"><b>${fm.remote || fm.live ? 'Tumhare votes' : esc(S.names[fm.who])}</b> — sirf tum dekho 👀</p>
     <div class="bar"><i style="width:${fm.i / FANTASIES.length * 100}%"></i></div>
     <div class="card"><div class="tag">${fm.i + 1} / ${FANTASIES.length}</div><div class="big">${esc(FANTASIES[fm.i])}</div></div>
     <div class="row"><button class="btn" data-v="0">Nahi</button><button class="btn g" data-v="1">Shayad</button><button class="btn p" data-v="2">Haan 🔥</button></div>`;
-  app.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { fm.a[fm.who][fm.i++] = +b.dataset.v; show(); });
+  app.querySelectorAll('[data-v]').forEach(b => b.onclick = () => {
+    fm.a[fm.who][fm.i++] = +b.dataset.v;
+    if (fm.live && fm.i >= FANTASIES.length) { put(`f:${fm.live}:${me()}`, { a: fm.a[0].join('') }); stack.pop(); }
+    show();
+  });
 }
 function matchResult() {
   const hot = [], maybe = [];
@@ -265,12 +281,14 @@ function matchResult() {
 let pkCat = Object.keys(POKES)[0], pkMsg = null, pkFrom = 0;
 function poke() {
   if (!pkMsg) pkMsg = draw('pk' + pkCat, POKES[pkCat]);
-  app.innerHTML = `<p class="mute">Din me kabhi bhi partner ko ek chingari bhejo. Bhejne wala:</p>
-    <div class="chips">${[0, 1].map(i => `<button class="chip ${pkFrom === i ? 'on' : ''}" data-f="${i}">${esc(S.names[i])}</button>`).join('')}</div>
+  app.innerHTML = `<p class="mute">Din me kabhi bhi partner ko ek chingari bhejo.${cloudOn() ? '' : ' Bhejne wala:'}</p>
+    ${cloudOn() ? '' : `<div class="chips">${[0, 1].map(i => `<button class="chip ${pkFrom === i ? 'on' : ''}" data-f="${i}">${esc(S.names[i])}</button>`).join('')}</div>`}
     <div class="chips">${Object.keys(POKES).map(c => `<button class="chip ${pkCat === c ? 'on' : ''}" data-c="${esc(c)}">${c}</button>`).join('')}</div>
     <div class="card"><div class="tag">To: ${esc(S.names[1 - pkFrom])}</div><div class="big">${esc(pkMsg)}</div></div>
-    <div class="row"><button class="btn" id="nx">Dusra dikhao</button><button class="btn p" id="wa">WhatsApp pe bhejo</button></div>
+    ${cloudOn() ? '<div class="row"><button class="btn p" id="dm">📲 Seedha partner ke phone pe</button></div>' : ''}
+    <div class="row"><button class="btn" id="nx">Dusra dikhao</button><button class="btn ${cloudOn() ? '' : 'p'}" id="wa">WhatsApp pe bhejo</button></div>
     <div class="row"><button class="btn" id="cp">Copy</button></div>`;
+  const dm = document.getElementById('dm'); if (dm) dm.onclick = () => { sendMsg('p', pkMsg); pkMsg = null; show(); };
   app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { pkFrom = +b.dataset.f; show(); });
   app.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { pkCat = b.dataset.c; pkMsg = null; show(); });
   document.getElementById('nx').onclick = () => { pkMsg = null; show(); };
@@ -306,29 +324,32 @@ const today = () => { const d = new Date(); return d.getFullYear() + '-' + (d.ge
 
 function ldr() {
   let cd = 'Agli mulaqat ki date daalo 👇';
-  if (S.meet) {
-    const days = Math.ceil((new Date(S.meet + 'T00:00') - new Date()) / 864e5);
+  const meet = meetDate();
+  if (meet) {
+    const days = daysTo(meet);
     cd = days > 0 ? `<b style="font-size:34px;color:var(--rose)">${days}</b> din baaki — phir saath ❤️` : 'Aaj ka din aa gaya! Phone rakho aur gale lago. ❤️';
   }
   const q = seededShuffle(DECKS.truth.filter(c => c[0] <= Math.min(S.max, 3)), 'q' + today())[0][1]
     .replace(/\{o\}/g, 'partner').replace(/\{p\}/g, 'tum');
   app.innerHTML = `
     <div class="card" style="min-height:0"><div class="tag">Countdown</div><div class="big">${cd}</div>
-      <input type="date" id="meet" value="${esc(S.meet || '')}" style="margin-top:12px"></div>
+      <input type="date" id="meet" value="${esc(meet)}" style="margin-top:12px"></div>
     <div class="card" style="min-height:0"><div class="tag">Aaj ka sawaal · dono phones pe same</div><div class="big">${esc(q)}</div></div>
     <div class="row"><button class="btn" id="qa">Apna jawab WhatsApp karo</button></div>
     <div class="grid">
+      <button class="tile" id="t10"><span class="em">☁️</span><b>Moshwa Cloud</b><span class="d">${cloudOn() ? 'On hai — sab kuch apne aap sync' : 'On karo — phir links ki zaroorat nahi'}</span></button>
+      <button class="tile" id="t11"><span class="em">💌</span><b>Inbox${unread() ? ' (' + unread() + ')' : ''}</b><span class="d">Partner ke seedhe bheje messages aur pokes</span></button>
       <button class="tile" id="t5"><span class="em">🟢</span><b>Live Room</b><span class="d">Phones jud jaate hain — Next aur Poke buzz live</span></button>
       <button class="tile" id="t1"><span class="em">📞</span><b>Sync Play</b><span class="d">Call pe same code daalo — dono ko same card dikhega</span></button>
-      <button class="tile" id="t2"><span class="em">💌</span><b>Sealed Message</b><span class="d">Dare ya secret ko link me band karke bhejo</span></button>
-      <button class="tile" id="t3"><span class="em">💘</span><b>Remote Fantasy Match</b><span class="d">Alag phones pe vote, link se match</span></button>
+      <button class="tile" id="t2"><span class="em">💌</span><b>Sealed Message</b><span class="d">Dare ya secret band karke bhejo</span></button>
+      <button class="tile" id="t3"><span class="em">💘</span><b>Remote Fantasy Match</b><span class="d">Alag phones pe vote, sirf matches khulte hain</span></button>
       <button class="tile" id="t4"><span class="em">📲</span><b>Poke</b><span class="d">Din bhar ke teasing texts</span></button>
       <button class="tile" id="t6"><span class="em">🔥</span><b>7-Din Tease</b><span class="d">Milne se pehle har din ek badhta task</span></button>
       <button class="tile" id="t7"><span class="em">📖</span><b>Story Builder</b><span class="d">Ek line tum, ek line partner</span></button>
       <button class="tile" id="t8"><span class="em">⏳</span><b>Time Capsule</b><span class="d">Letter jo tay date pe hi khule</span></button>
       <button class="tile" id="t9"><span class="em">📝</span><b>Bucket List</b><span class="d">Milne pe karne wali cheezein</span></button>
     </div>`;
-  document.getElementById('meet').onchange = e => { S.meet = e.target.value; save(); show(); };
+  document.getElementById('meet').onchange = e => { put('meet', { d: e.target.value }); show(); };
   document.getElementById('qa').onclick = () => wa('❓ Aaj ka Moshwa sawaal: ' + q + '\n\nMera jawab: ');
   document.getElementById('t1').onclick = () => go(sync, 'Sync Play');
   document.getElementById('t2').onclick = () => { sealText = ''; go(seal, 'Sealed Message'); };
@@ -339,9 +360,11 @@ function ldr() {
   document.getElementById('t7').onclick = () => go(story, 'Story Builder');
   document.getElementById('t8').onclick = () => go(capsule, 'Time Capsule');
   document.getElementById('t9').onclick = () => go(bucket, 'Bucket List');
+  document.getElementById('t10').onclick = () => go(cloudSetup, 'Moshwa Cloud');
+  document.getElementById('t11').onclick = () => go(inbox, 'Inbox');
 }
 
-const SYNC_DECKS = { ldr: '📞 Call Dares', romance: '💞 Romance', truth: 'Truth', dare: 'Dare', wyr: 'Ye ya Wo', never: 'Never', theatre: 'Theatre' };
+const SYNC_DECKS = { ldr: '📞 Call Dares', romance: '💞 Romance', truth: 'Truth', dare: 'Dare', wyr: 'Ye ya Wo', never: 'Never', theatre: 'Theatre', pos: '📜 Kamasutra', date: '🌹 Dates', rp: '🎭 Roleplay', dice: '🎯 Dice' };
 let sy = { kind: 'ldr', i: 0 };
 function sync() {
   const code = (S.code || '').trim().toLowerCase();
@@ -353,7 +376,7 @@ function sync() {
     <div class="chips">${Object.keys(SYNC_DECKS).map(k => `<button class="chip ${sy.kind === k ? 'on' : ''}" data-sk="${k}">${SYNC_DECKS[k]}</button>`).join('')}</div>
     ${levelChips()}
     ${code ? `<p class="turn">Card <b>#${sy.i + 1}</b> — partner se confirm karo number same hai</p>
-      <div class="card"><div class="tag">${SYNC_DECKS[sy.kind]} · ${LEVELS[c[0]]}</div><div class="big">${fill(c[1], sy.i % 2)}</div></div>
+      <div class="card"><div class="tag">${SYNC_DECKS[sy.kind]}${VDECKS[sy.kind] ? '' : ' · ' + LEVELS[c[0]]}</div><div class="big">${fill(c[1], sy.i % 2)}</div></div>
       ${c[2] ? `<div class="row"><button class="btn g" id="tm">⏱ Timer start (${c[2]}s)</button></div>` : ''}
       <div class="row"><button class="btn" id="pv" ${sy.i ? '' : 'disabled'}>← Pichla</button><button class="btn p" id="nx">Next →</button></div>`
       : '<div class="box">Code daalo toh cards khulenge. Call pe "3-2-1 Next" bolke saath me aage badho.</div>'}
@@ -370,14 +393,16 @@ function sync() {
 
 let sealText = '';
 function seal() {
-  const from = S.names[pkFrom], plain = t => t.replace(/\{p\}/g, 'Tum').replace(/\{o\}/g, from);
-  app.innerHTML = `<p class="mute">Jo likhoge wo ek link me band ho jaayega. Partner link kholega, tap karega, tab dikhega. Bhejne wala:</p>
-    <div class="chips">${[0, 1].map(i => `<button class="chip ${pkFrom === i ? 'on' : ''}" data-f="${i}">${esc(S.names[i])}</button>`).join('')}</div>
+  const from = S.names[cloudOn() ? me() : pkFrom], plain = t => t.replace(/\{p\}/g, 'Tum').replace(/\{o\}/g, from);
+  app.innerHTML = `<p class="mute">${cloudOn() ? 'Jo likhoge wo seedha partner ke Inbox me jaayega — dhundhla, jab tak wo tap na kare.' : 'Jo likhoge wo ek link me band ho jaayega. Partner link kholega, tap karega, tab dikhega. Bhejne wala:'}</p>
+    ${cloudOn() ? '' : `<div class="chips">${[0, 1].map(i => `<button class="chip ${pkFrom === i ? 'on' : ''}" data-f="${i}">${esc(S.names[i])}</button>`).join('')}</div>`}
     <textarea id="tx" rows="5" maxlength="600" placeholder="Apna dare, secret, order ya fantasy likho…">${esc(sealText)}</textarea>
     <div class="chips"><button class="chip" data-r="dare">🎲 Random dare</button><button class="chip" data-r="truth">🎲 Random truth</button><button class="chip" data-r="ldr">🎲 Call dare</button><button class="chip" data-r="theatre">🎲 Fantasy scene</button></div>
     <p class="mute">Random cards ka level: ${LEVELS[S.max]} (⚙ se badlo)</p>
-    <div class="row"><button class="btn p" id="wa">💌 Seal karke WhatsApp karo</button></div><div class="row"><button class="btn" id="cp">Link copy karo</button></div>`;
+    ${cloudOn() ? '<div class="row"><button class="btn p" id="dm">💌 Seedha Inbox me bhejo</button></div>' : ''}
+    <div class="row"><button class="btn ${cloudOn() ? '' : 'p'}" id="wa">💌 Seal karke WhatsApp karo</button></div><div class="row"><button class="btn" id="cp">Link copy karo</button></div>`;
   const tx = document.getElementById('tx');
+  const dm = document.getElementById('dm'); if (dm) dm.onclick = () => { if (!sealText.trim()) return tx.focus(); sendMsg('s', sealText.trim()); sealText = ''; show(); };
   tx.oninput = () => { sealText = tx.value; };
   app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { pkFrom = +b.dataset.f; show(); });
   app.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { sealText = tx.value = plain(pick(b.dataset.r, S.max)[1]); });
@@ -397,7 +422,8 @@ function sealed(msg) {
 }
 
 /* ---------- boot ---------- */
-applyCustom(); loadRemote(); lock();
+migrate(); if (S.cloud && S.cloud.on) pkFrom = me();
+applyCustom(); loadRemote(); lock(); cloudSync();
 if (S.ready) go(home); else go(settings, 'Moshwa ❤️');
 function route() {
   const m = location.hash.match(/^#([smbcy])=(.+)$/), o = m && unb64(m[2]);
@@ -410,18 +436,20 @@ function route() {
   }
   const str = (v, n) => typeof v === 'string' && v.trim() ? v.slice(0, n) : null;
   if (m[1] === 'b' && Array.isArray(o.l)) {
-    const B = S.bucket = S.bucket || [];
-    o.l.slice(0, 100).forEach(t => { t = str(t, 120); if (t && !B.some(x => x.t === t)) B.push({ t, d: 0 }); });
-    save(); go(bucket, 'Bucket List');
+    const have = recs('b:').map(x => x.t);
+    o.l.slice(0, 100).forEach((t, n) => { t = str(t, 120); if (t && !have.includes(t)) { have.push(t); put('b:' + rid(), { t, d: 0, c: Date.now() + n }); } });
+    go(bucket, 'Bucket List');
   }
   if (m[1] === 'c' && str(o.t, 800) && /^\d{4}-\d{2}-\d{2}$/.test(o.d)) {
-    const C = S.caps = S.caps || [], c = { t: str(o.t, 800), f: str(o.f, 20) || 'Partner', d: o.d };
-    if (!C.some(x => x.t === c.t && x.d === c.d)) C.push(c);
-    save(); go(capsule, 'Time Capsule');
+    const t = str(o.t, 800);
+    if (!recs('c:').some(x => x.t === t && x.d === o.d)) put('c:' + rid(), { t, f: str(o.f, 20) || 'Partner', d: o.d, from: -1 });
+    go(capsule, 'Time Capsule');
   }
   if (m[1] === 'y' && Array.isArray(o.l)) {
     const l = o.l.slice(0, 40).filter(x => Array.isArray(x) && str(x[0], 20) && str(x[1], 300)).map(x => [str(x[0], 20), str(x[1], 300)]);
-    if (l.length) { S.story = { l }; save(); }
+    let L = storyLines();
+    if (l.length && L.length && L[0].t !== l[0][1]) { put('ysid', { v: rid() }); L = []; }
+    l.forEach((x, n) => { if (!L.some(y => y.n === n && y.t === x[1])) put(`y:${storyId()}:${rid()}`, { w: x[0], t: x[1], n }); });
     go(story, 'Story Builder');
   }
 }

@@ -44,4 +44,11 @@ with your own commit message. It needs a fine-grained GitHub token limited to
 this repository with **Contents: Read and write**; the token is stored only in
 that phone's browser. Built-in cards live in [`moshwa/data.js`](moshwa/data.js).
 
+## Moshwa Cloud
+
+With the same token and a shared couple code on both phones, the long-distance features sync
+automatically instead of passing links: bucket list, story, time capsules, an inbox for sealed
+messages and pokes, live Fantasy Match, the tease challenge and the countdown. State is encrypted
+in the browser (AES-GCM, key derived from the couple code) and stored on the `moshwa-data` branch.
+
 More detail: [`moshwa/README.md`](moshwa/README.md).

@@ -13,42 +13,45 @@ function toast(msg) {
 
 /* ---------- Bucket list ---------- */
 function bucket() {
-  const B = S.bucket = S.bucket || [];
-  app.innerHTML = `<p class="mute">Door rehte hue jodte raho — fantasies, dates, positions, jagah. Milne pe ek-ek tick karo.</p>
+  const B = recs('b:').sort((a, b) => (a.c || 0) - (b.c || 0));
+  app.innerHTML = `<p class="mute">Door rehte hue jodte raho — fantasies, dates, positions, jagah. Milne pe ek-ek tick karo.${cloudOn() ? ' ☁️ Dono phones pe apne aap sync hota hai.' : ''}</p>
     <div class="row"><input type="text" id="bi" maxlength="120" placeholder="Milne pe kya karna hai?"><button class="btn p" id="ba" style="flex:0 0 70px">Add</button></div>
-    <ul class="list">${B.map((x, i) => `<li class="${x.d ? 'done' : ''}"><label class="tick"><input type="checkbox" data-i="${i}" ${x.d ? 'checked' : ''}><span>${esc(x.t)}</span></label><button class="x" data-x="${i}" aria-label="Hatao">✕</button></li>`).join('') || '<li class="mute">Abhi khaali hai. Pehli wish jodo 👆</li>'}</ul>
+    <ul class="list">${B.map(x => `<li class="${x.d ? 'done' : ''}"><label class="tick"><input type="checkbox" data-i="${esc(x.key)}" ${x.d ? 'checked' : ''}><span>${esc(x.t)}</span></label><button class="x" data-x="${esc(x.key)}" aria-label="Hatao">✕</button></li>`).join('') || '<li class="mute">Abhi khaali hai. Pehli wish jodo 👆</li>'}</ul>
     <p class="mute">${B.filter(x => x.d).length} / ${B.length} pure hue</p>
-    <div class="row"><button class="btn" id="bs" ${B.length ? '' : 'disabled'}>List partner ko bhejo (link)</button></div>
-    <p class="mute">Partner link kholega toh tumhari wishes unki list me jud jaayengi — phir wo apni list wapas bhej sakte hain.</p>`;
-  const add = () => { const v = document.getElementById('bi').value.trim(); if (v && !B.some(x => x.t === v)) { B.push({ t: v, d: 0 }); save(); } show(); };
+    ${cloudOn() ? '' : `<div class="row"><button class="btn" id="bs" ${B.length ? '' : 'disabled'}>List partner ko bhejo (link)</button></div>
+    <p class="mute">Link ke bina sync chahiye toh Long Distance me ☁️ Moshwa Cloud on karo.</p>`}`;
+  const add = () => { const v = document.getElementById('bi').value.trim(); if (v && !B.some(x => x.t === v)) put('b:' + rid(), { t: v, d: 0, c: Date.now() }); show(); };
   document.getElementById('ba').onclick = add;
   document.getElementById('bi').onkeydown = e => { if (e.key === 'Enter') add(); };
-  app.querySelectorAll('[data-i]').forEach(c => c.onchange = () => { B[+c.dataset.i].d = c.checked ? 1 : 0; save(); show(); });
-  app.querySelectorAll('[data-x]').forEach(c => c.onclick = () => { B.splice(+c.dataset.x, 1); save(); show(); });
-  document.getElementById('bs').onclick = () => wa('📝 Humari Moshwa bucket list — kholo aur apni wishes jodo: ' + link('b', { l: B.map(x => x.t) }));
+  app.querySelectorAll('[data-i]').forEach(c => c.onchange = () => { const x = rec(c.dataset.i); if (x) put(c.dataset.i, { t: x.t, c: x.c, d: c.checked ? 1 : 0 }); show(); });
+  app.querySelectorAll('[data-x]').forEach(c => c.onclick = () => { del(c.dataset.x); show(); });
+  const bs = document.getElementById('bs'); if (bs) bs.onclick = () => wa('📝 Humari Moshwa bucket list — kholo aur apni wishes jodo: ' + link('b', { l: B.map(x => x.t) }));
 }
 
 /* ---------- Time capsule ---------- */
 let capText = '';
 function capsule() {
-  const C = S.caps = S.caps || [];
-  const def = S.meet && daysTo(S.meet) > 0 ? S.meet : iso(new Date(Date.now() + 864e5));
-  app.innerHTML = `<p class="mute">Aaj likho, par link sirf tay date ko khulega. Likhne wala:</p>${whoChips()}
+  const my = me(), on = cloudOn(), all = recs('c:').sort((a, b) => a.d < b.d ? -1 : 1);
+  const C = all.filter(c => c.from !== my || !on), sentN = on ? all.filter(c => c.from === my).length : 0;
+  const m = meetDate(), def = m && daysTo(m) > 0 ? m : iso(new Date(Date.now() + 864e5));
+  app.innerHTML = `<p class="mute">Aaj likho, par capsule sirf tay date ko khulega.${on ? ' ☁️ Seedha partner ke phone pe pahunchta hai.' : ' Likhne wala:'}</p>${on ? '' : whoChips()}
     <textarea id="ct" rows="5" maxlength="800" placeholder="Future wale partner ke liye letter, fantasy ya promise…">${esc(capText)}</textarea>
     <label>Kab khule?</label><input type="date" id="cdt" value="${def}" min="${iso()}">
-    <div class="row"><button class="btn p" id="cw">⏳ Capsule WhatsApp karo</button></div>
+    <div class="row"><button class="btn p" id="cw">${on ? '⏳ Capsule bhejo' : '⏳ Capsule WhatsApp karo'}</button></div>
+    ${on ? `<p class="mute">Tumne ${sentN} capsule bheje hain jo partner ke paas hain.</p>` : ''}
     <h2>Mile hue capsules</h2>
-    <ul class="list">${C.map((c, i) => { const n = daysTo(c.d); return n > 0
+    <ul class="list">${C.map(c => { const n = daysTo(c.d); return n > 0
       ? `<li>🔒 <b>${esc(c.f)}</b> ka capsule — ${n} din baad khulega (${esc(c.d)})</li>`
-      : `<li class="hot">💌 <b>${esc(c.f)}</b> ka capsule (${esc(c.d)}) — tap karke padho<br><span class="secret">${esc(c.t)}</span><button class="x" data-x="${i}" aria-label="Hatao">✕</button></li>`; }).join('') || '<li class="mute">Abhi koi capsule nahi aaya.</li>'}</ul>`;
+      : `<li class="hot">💌 <b>${esc(c.f)}</b> ka capsule (${esc(c.d)}) — tap karke padho<br><span class="secret">${esc(c.t)}</span><button class="x" data-x="${esc(c.key)}" aria-label="Hatao">✕</button></li>`; }).join('') || '<li class="mute">Abhi koi capsule nahi aaya.</li>'}</ul>`;
   bindWho();
   const tx = document.getElementById('ct'); tx.oninput = () => { capText = tx.value; };
   app.querySelectorAll('.secret').forEach(x => x.onclick = () => x.classList.toggle('show'));
-  app.querySelectorAll('[data-x]').forEach(c => c.onclick = () => { C.splice(+c.dataset.x, 1); save(); show(); });
+  app.querySelectorAll('[data-x]').forEach(c => c.onclick = () => { del(c.dataset.x); show(); });
   document.getElementById('cw').onclick = () => {
-    const d = document.getElementById('cdt').value;
-    if (!capText.trim() || !d) return tx.focus();
-    wa(`⏳ Tumhare liye ek Moshwa time capsule — ${d} ko khulega. Link sambhal ke rakhna: ` + link('c', { t: capText.trim(), f: S.names[pkFrom], d }));
+    const d = document.getElementById('cdt').value, t = capText.trim();
+    if (!t || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return tx.focus();
+    if (on) { put('c:' + rid(), { t, f: S.names[my], d, from: my }); capText = ''; toast(`Capsule bhej diya ✓ ${d} ko khulega`); return show(); }
+    wa(`⏳ Tumhare liye ek Moshwa time capsule — ${d} ko khulega. Link sambhal ke rakhna: ` + link('c', { t, f: S.names[pkFrom], d }));
   };
 }
 
@@ -58,52 +61,54 @@ const TEASE7 = [
   ["3 cheezein likh ke bhejo jo tum milte hi karna chahte ho.", "30-second ka whisper voice note: milne ki pehli raat ka plan."],
   ["Aaj raat call pe ek gaana saath suno — aankhen band.", "Aaj partner tumhara outfit choose karega. Pehen ke photo bhejo."],
   ["Ek chhoti love letter likho aur Sealed Message se bhejo.", "Aaj koi touch nahi — khud ko bhi nahi. Partner ko batao kitna mushkil hai."],
-  ["Remote Fantasy Match khelo aur milne ke liye ek match choose karo.", "Fantasy Theatre ka ek scene voice note me narrate karke bhejo."],
+  ["Fantasy Match khelo aur milne ke liye ek match choose karo.", "Fantasy Theatre ka ek scene voice note me narrate karke bhejo."],
   ["Milne wale din ka pura plan banao — kya pehnoge, kaha jaoge.", "Call pe Call Dares ke 5 cards khelo — par finish mana hai. Ruko."],
   ["Aaj sirf ek message: 'kal'. Baaki sab aankhon se.", "Aakhri raat: ek Time Capsule likho jo kal milne ke baad khule. Aur aaj bhi — ruko."],
 ];
 function tease() {
-  const T = S.tease, canMeet = S.meet && daysTo(S.meet) >= 1;
-  if (!T) {
-    app.innerHTML = `<div class="card"><div class="big">7 din, 7 tasks.<br>Har din thoda aur.</div><p class="mute">Har din ek naya task khulta hai — dono karte ho, proof WhatsApp pe. Level ${LEVELS[S.max]} ke hisaab se tasks soft ya hot honge.</p></div>
+  const T = rec('t7'), m = meetDate(), canMeet = m && daysTo(m) >= 1, my = me(), on = cloudOn();
+  if (!T || !T.start) {
+    app.innerHTML = `<div class="card"><div class="big">7 din, 7 tasks.<br>Har din thoda aur.</div><p class="mute">Har din ek naya task khulta hai — dono karte ho. Level ${LEVELS[S.max]} ke hisaab se tasks soft ya hot honge.</p></div>
       <div class="row"><button class="btn p" id="t0">Aaj se shuru</button></div>
       ${canMeet ? '<div class="row"><button class="btn g" id="tm">Mulaqat se 7 din pehle shuru</button></div>' : '<p class="mute">Tip: Long Distance me mulaqat ki date daal do toh challenge theek milne se 7 din pehle shuru ho sakta hai.</p>'}`;
-    document.getElementById('t0').onclick = () => { S.tease = { start: iso(), done: [] }; save(); show(); };
-    if (canMeet) document.getElementById('tm').onclick = () => { S.tease = { start: iso(new Date(new Date(S.meet + 'T00:00') - 7 * 864e5)), done: [] }; save(); show(); };
+    document.getElementById('t0').onclick = () => { put('t7', { start: iso() }); show(); };
+    if (canMeet) document.getElementById('tm').onclick = () => { put('t7', { start: iso(new Date(new Date(m + 'T00:00') - 7 * 864e5)) }); show(); };
     return;
   }
-  const day = 1 - daysTo(T.start), hot = S.max >= 3 ? 1 : 0;
-  app.innerHTML = `<p class="mute">${day < 1 ? `Challenge ${-day + 1} din me shuru hoga (${esc(T.start)}).` : day > 7 ? 'Challenge pura! 🎉' : `Aaj din ${day} / 7`} · Dono phones pe same start date rakho.</p>
+  const day = 1 - daysTo(T.start), hot = S.max >= 3 ? 1 : 0, done = (i, w) => !!rec(`t7d:${T.start}:${i}:${w}`);
+  app.innerHTML = `<p class="mute">${day < 1 ? `Challenge ${-day + 1} din me shuru hoga (${esc(T.start)}).` : day > 7 ? 'Challenge pura! 🎉' : `Aaj din ${day} / 7`}${on ? ' · ☁️ partner ke ticks bhi dikhte hain.' : ' · Dono phones pe same din shuru karo.'}</p>
     <ul class="list">${TEASE7.map((t, i) => i + 1 > day
       ? `<li class="mute">🔒 Din ${i + 1}</li>`
-      : `<li class="${i + 1 === day ? 'hot' : ''} ${T.done[i] ? 'done' : ''}"><label class="tick"><input type="checkbox" data-i="${i}" ${T.done[i] ? 'checked' : ''}><span><b>Din ${i + 1}:</b> ${esc(t[hot])}</span></label></li>`).join('')}</ul>
-    <div class="row"><button class="btn" id="tw">Aaj ka proof WhatsApp karo</button><button class="btn" id="tr">Reset</button></div>`;
-  app.querySelectorAll('[data-i]').forEach(c => c.onchange = () => { T.done[+c.dataset.i] = c.checked ? 1 : 0; save(); show(); });
-  document.getElementById('tw').onclick = () => wa(`🔥 Moshwa 7-din challenge — din ${Math.max(1, Math.min(7, day))} done ✓ `);
-  document.getElementById('tr').onclick = e => { if (e.target.dataset.sure) { delete S.tease; save(); show(); } else { e.target.dataset.sure = 1; e.target.textContent = 'Pakka? Dobara dabao'; } };
+      : `<li class="${i + 1 === day ? 'hot' : ''} ${done(i, my) ? 'done' : ''}"><label class="tick"><input type="checkbox" data-i="${i}" ${done(i, my) ? 'checked' : ''}><span><b>Din ${i + 1}:</b> ${esc(t[hot])}</span></label>${on ? `<div class="mute">${esc(S.names[1 - my])}: ${done(i, 1 - my) ? '✓ kar liya' : 'abhi baaki'}</div>` : ''}</li>`).join('')}</ul>
+    <div class="row">${on ? '' : '<button class="btn" id="tw">Aaj ka proof WhatsApp karo</button>'}<button class="btn" id="tr">Reset</button></div>`;
+  app.querySelectorAll('[data-i]').forEach(c => c.onchange = () => { const k = `t7d:${T.start}:${c.dataset.i}:${my}`; if (c.checked) put(k, { v: 1 }); else del(k); show(); });
+  const tw = document.getElementById('tw'); if (tw) tw.onclick = () => wa(`🔥 Moshwa 7-din challenge — din ${Math.max(1, Math.min(7, day))} done ✓ `);
+  document.getElementById('tr').onclick = e => { if (e.target.dataset.sure) { del('t7'); show(); } else { e.target.dataset.sure = 1; e.target.textContent = 'Pakka? Dobara dabao'; } };
 }
 
 /* ---------- Story builder ---------- */
 let stText = '';
+const storyId = () => (rec('ysid') || {}).v || '0';
+const storyLines = () => recs(`y:${storyId()}:`).sort((a, b) => a.n - b.n || a.ts - b.ts);
 function story() {
-  const L = (S.story = S.story || { l: [] }).l;
-  app.innerHTML = `<p class="mute">Ek line tum, ek line partner. Har baar link wapas bhejo — kahani badhti jaayegi.</p>
-    <ul class="list">${L.map(x => `<li><b>${esc(x[0])}:</b> ${esc(x[1])}</li>`).join('') || '<li class="mute">Kahani abhi shuru nahi hui. Pehli line likho ya 🎲 starter lo.</li>'}</ul>
-    ${whoChips()}
+  const L = storyLines(), on = cloudOn(), my = on ? me() : pkFrom;
+  app.innerHTML = `<p class="mute">Ek line tum, ek line partner — kahani badhti jaayegi.${on ? ' ☁️ Har line seedha partner ke phone pe dikhti hai.' : ' Har baar link wapas bhejo.'}</p>
+    <ul class="list">${L.map(x => `<li><b>${esc(x.w)}:</b> ${esc(x.t)}</li>`).join('') || '<li class="mute">Kahani abhi shuru nahi hui. Pehli line likho ya 🎲 starter lo.</li>'}</ul>
+    ${on ? '' : whoChips()}
     <textarea id="sx" rows="3" maxlength="300" placeholder="Agli line…">${esc(stText)}</textarea>
     <div class="chips"><button class="chip" id="sr">🎲 Starter scene</button></div>
-    <div class="row"><button class="btn p" id="sw">Line jodo & link bhejo</button></div>
+    <div class="row"><button class="btn p" id="sw">${on ? 'Line jodo' : 'Line jodo & link bhejo'}</button></div>
     <div class="row"><button class="btn" id="sn">Nayi kahani</button></div>`;
   bindWho();
   const tx = document.getElementById('sx'); tx.oninput = () => { stText = tx.value; };
-  document.getElementById('sr').onclick = () => { stText = tx.value = pick('theatre', S.max)[1].replace(/\{p\}/g, S.names[pkFrom]).replace(/\{o\}/g, S.names[1 - pkFrom]); };
+  document.getElementById('sr').onclick = () => { stText = tx.value = pick('theatre', S.max)[1].replace(/\{p\}/g, S.names[my]).replace(/\{o\}/g, S.names[1 - my]); };
   document.getElementById('sw').onclick = () => {
     if (!stText.trim()) return tx.focus();
     if (L.length >= 40) return toast('Kahani 40 lines ki ho gayi — nayi shuru karo.');
-    L.push([S.names[pkFrom], stText.trim()]); stText = ''; save(); show();
-    wa('📖 Humari Moshwa kahani me nayi line — ab tumhari baari: ' + link('y', { l: L }));
+    put(`y:${storyId()}:${rid()}`, { w: S.names[my], t: stText.trim().slice(0, 300), n: L.length }); stText = ''; show();
+    if (!on) wa('📖 Humari Moshwa kahani me nayi line — ab tumhari baari: ' + link('y', { l: storyLines().map(x => [x.w, x.t]) }));
   };
-  document.getElementById('sn').onclick = e => { if (e.target.dataset.sure) { S.story = { l: [] }; save(); show(); } else { e.target.dataset.sure = 1; e.target.textContent = 'Purani mit jaayegi — dobara dabao'; } };
+  document.getElementById('sn').onclick = e => { if (e.target.dataset.sure) { put('ysid', { v: rid() }); show(); } else { e.target.dataset.sure = 1; e.target.textContent = 'Purani hat jaayegi — dobara dabao'; } };
 }
 
 /* ---------- Live room (phone-to-phone, WebRTC via PeerJS) ---------- */
@@ -194,7 +199,7 @@ function lrDraw() {
     <div class="chips">${Object.keys(SYNC_DECKS).map(k => `<button class="chip ${lr.kind === k ? 'on' : ''}" data-sk="${k}">${SYNC_DECKS[k]}</button>`).join('')}</div>
     <div class="chips">${[1, 2, 3, 4, 5].map(l => `<button class="chip ${lr.max === l ? 'on' : ''}" data-ll="${l}">${LEVELS[l]}</button>`).join('')}</div>
     <label class="only"><input type="checkbox" id="lo" ${lr.only ? 'checked' : ''}> Sirf isi level ke cards</label>
-    <div class="card"><div class="tag">${SYNC_DECKS[lr.kind]} · ${LEVELS[c[0]]}</div><div class="big">${txt}</div></div>
+    <div class="card"><div class="tag">${SYNC_DECKS[lr.kind]}${VDECKS[lr.kind] ? '' : ' · ' + LEVELS[c[0]]}</div><div class="big">${txt}</div></div>
     ${c[2] ? `<div class="row"><button class="btn g" id="tm">⏱ Timer start (${c[2]}s)</button></div>` : ''}
     <div class="row"><button class="btn" id="sk">Skip</button><button class="btn p" id="dn">Done ✓</button></div>
     <div class="row">${['💓 Poke', '😘', '🔥', '😈 Abhi'].map(m => `<button class="btn" data-bz="${m}">${m}</button>`).join('')}</div>`;

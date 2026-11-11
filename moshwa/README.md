@@ -25,6 +25,12 @@ published: with a fine-grained GitHub token (Contents: read/write on this repo o
 commits them to `custom.json` with your commit message, and every phone picks them up on next load.
 You can also edit the lists in `data.js` directly.
 
+**Moshwa Cloud (no more links):** in 🌍 Long Distance → ☁️ Moshwa Cloud, enter the same GitHub token
+and the same couple code on both phones. Bucket list, story, capsules, sealed messages, pokes,
+Fantasy Match votes, the tease challenge, countdown and names then sync automatically, even when
+the other phone is offline. The data is AES-GCM encrypted with a key derived from the couple code
+and stored on the `moshwa-data` branch, so the repository only ever holds ciphertext.
+
 **Privacy:** optional 4-digit PIN lock (Settings). **Install:** the site is a PWA — add it to the
 home screen and it works offline after the first load.
 
